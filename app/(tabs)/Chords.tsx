@@ -1,14 +1,57 @@
-import { StyleSheet } from 'react-native';
+// Chords.tsx
+import React, { useEffect, useState } from "react";
+import { StyleSheet, FlatList, Pressable } from "react-native";
+import { Text, View } from "@/components/Themed";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "@/components/types";
 
+type ChordsScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "Chords"
+>;
 
-import { Text, View } from '@/components/Themed';
+type ChordsProps = {
+  navigation: ChordsScreenNavigationProp;
+};
 
-export default function Chords() {
+export default function Chords({ navigation }: ChordsProps) {
+  const [songs, setSongs] = useState<
+    Array<{ id: number; title: string; artist: string }>
+  >([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3000/songs/")
+      .then((response) => {
+        setSongs(response.data);
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
+  const renderItem = ({
+    item,
+  }: {
+    item: { id: number; title: string; artist: string };
+  }) => (
+    <Pressable
+      key={item.id}
+      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      onPress={() => navigation.navigate("SongDetails", { song: item })}
+    >
+      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.artist}>{item.artist}</Text>
+    </Pressable>
+  );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Two</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-   
+      <FlatList
+        data={songs}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
+      />
     </View>
   );
 }
@@ -16,16 +59,34 @@ export default function Chords() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 30,
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: 15,
+    marginVertical: 10,
+    borderRadius: 10,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+  cardPressed: {
+    opacity: 0.5,
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  artist: {
+    fontSize: 16,
+    color: "#888",
   },
 });
