@@ -71,6 +71,13 @@ const SignUp: React.FC = () => {
         />
       <Button title="Sign Up" onPress={signUpAndNavigate} disabled={loading} />
       {error && <Text style={styles.error}>{error}</Text>}
+
+        <Button
+            title="Sign In"
+            onPress={() => {
+            router.back();
+            }}
+        />
     </View>
   );
 };

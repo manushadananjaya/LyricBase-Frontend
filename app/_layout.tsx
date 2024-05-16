@@ -11,7 +11,7 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/components/useColorScheme";
-
+// import { AuthContextProvider } from "@/context/authContext";
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -54,14 +54,16 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      
-      <Stack>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
-        <Stack.Screen name="SongDetails" />
-        <Stack.Screen name="ArtistDetails" />
-      </Stack>
+      {/* <AuthContextProvider> */}
+        <Stack>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
+          <Stack.Screen name="SongDetails" />
+          <Stack.Screen name="ArtistDetails" />
+        </Stack>
+        
+      {/* </AuthContextProvider> */}
     </ThemeProvider>
   );
 }
