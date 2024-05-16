@@ -1,34 +1,39 @@
-import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
-import axios from "axios";
+import useSignUp from "@/hooks/useSignUp";
+import { router } from "expo-router";
 
-interface SignUpProps {}
+const SignUp: React.FC = () => {
+  const {
+    name,
+    setName,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loading,
+    error,
+    handleSignUp,
+    clearError,
+    confirmPassword,
+    setConfirmPassword,
+  } = useSignUp();
 
-const SignUp: React.FC<SignUpProps> = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  useEffect(() => {
+    if (error) {
+      const timeout = setTimeout(() => {
+        clearError();
+      }, 5000); // Clear error after 5 seconds
 
-  const handleSignUp = async () => {
-    try {
-      const response = await axios.post("http://localhost:3000/auth/signup", {
-        name,
-        email,
-        password,
-      });
+      return () => clearTimeout(timeout);
+    }
+  }, [error, clearError]);
 
-      // Assuming your backend returns a success message or status code
-      if (response.data.success) {
-        // Signup successful, navigate to another screen or perform other actions
-        console.log("Signup successful");
-        // Navigate to the sign-in screen
-        router.push("/sign-in");
-      } else {
-        throw new Error("Signup failed");
-      }
-    } catch (error) {
-      console.error("Signup error:", error);
+  const signUpAndNavigate = async () => {
+    clearError();
+    const response = await handleSignUp();
+    if (response.success) {
+      router.push("/sign-in");
     }
   };
 
@@ -57,7 +62,15 @@ const SignUp: React.FC<SignUpProps> = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry
+        />
+      <Button title="Sign Up" onPress={signUpAndNavigate} disabled={loading} />
+      {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 };
@@ -81,6 +94,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+  },
+  error: {
+    color: "red",
+    marginBottom: 10,
   },
 });
 
