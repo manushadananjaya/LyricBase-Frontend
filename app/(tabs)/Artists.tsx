@@ -6,47 +6,49 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 
-type ChordsScreenNavigationProp = StackNavigationProp<
+type ArtistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
-  "Chords"
+  "Artists"
 >;
 
-export default function Chords() {
-  const navigation = useNavigation<ChordsScreenNavigationProp>();
-  const [songs, setSongs] = useState<
-    Array<{ id: number; title: string; artist: string }>
-  >([]);
+interface Artist {
+  id: number;
+  name: string;
+
+}
+
+export default function Artists() {
+  const navigation = useNavigation<ArtistsScreenNavigationProp>();
+  const [artists, setArtists] = useState<Artist[]>([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/songs/")
+      .get("http://localhost:3000/artists/")
       .then((response) => {
-        setSongs(response.data);
+        setArtists(response.data);
       })
       .catch((error) => console.error(error));
   }, []);
 
-  const renderItem = ({
-    item,
-  }: {
-    item: { id: number; title: string; artist: string };
-  }) => (
-    <Pressable
-      key={item.id}
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-      onPress={() => navigation.navigate("SongDetails", { song: item })}
-    >
-      <Text style={styles.title}>
-        {item.title}
-        <Text style={styles.artist}> {item.artist}</Text>
-      </Text>
-    </Pressable>
+  
+  const renderItem = ({ item }: { item: Artist }) => (
+      
+
+    (
+      <Pressable
+        key={item.id}
+        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+        onPress={() => navigation.navigate("ArtistDetails", { artist: item })}
+      >
+        <Text style={styles.title}>{`${item}`}</Text>
+      </Pressable>
+    )
   );
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={songs}
+        data={artists}
         renderItem={renderItem}
         keyExtractor={(item, index) => `${item.id}-${index}`}
         contentContainerStyle={styles.listContent}
@@ -85,9 +87,5 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-  },
-  artist: {
-    fontSize: 16,
-    color: "#888",
   },
 });

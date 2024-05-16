@@ -5,4 +5,8 @@ export type RootStackParamList = {
   Chords: undefined;
   Search: undefined;
   Guitar: undefined;
+  Artists: undefined;
+  ArtistDetails: { artist: { id: number; name: string }} ; 
+
+
 };

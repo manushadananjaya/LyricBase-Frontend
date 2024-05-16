@@ -31,16 +31,19 @@ export default function Chords() {
   }: {
     item: { id: number; title: string; artist: string };
   }) => (
-    <Pressable
-      key={item.id}
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-      onPress={() => navigation.navigate("SongDetails", { song: item })}
-    >
-      <Text style={styles.title}>
-        {item.title}
-        <Text style={styles.artist}> {item.artist}</Text>
-      </Text>
-    </Pressable>
+    
+    (
+      <Pressable
+        key={item.id}
+        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+        onPress={() => navigation.navigate("SongDetails", { song: item })}
+      >
+        <Text style={styles.title}>
+          {item.title}
+          <Text style={styles.artist}> {item.artist}</Text>
+        </Text>
+      </Pressable>
+    )
   );
 
   return (
