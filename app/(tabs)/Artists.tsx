@@ -5,6 +5,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
+import { useThemeColor } from "@/components/Themed";
 
 type ArtistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -18,6 +19,8 @@ interface Artist {
 }
 
 export default function Artists() {
+    const buttonColor = useThemeColor({}, "button");
+    const buttonPressedColor = useThemeColor({}, "buttonPressed");
   const navigation = useNavigation<ArtistsScreenNavigationProp>();
   const [artists, setArtists] = useState<Artist[]>([]);
 
@@ -32,17 +35,16 @@ export default function Artists() {
 
   
   const renderItem = ({ item }: { item: Artist }) => (
-      
-
-    (
-      <Pressable
-        key={item.id}
-        style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
-        onPress={() => navigation.navigate("ArtistDetails", { artist: item })}
-      >
-        <Text style={styles.title}>{`${item}`}</Text>
-      </Pressable>
-    )
+    <Pressable
+      key={item.id}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+      ]}
+      onPress={() => navigation.navigate("ArtistDetails", { artist: item })}
+    >
+      <Text style={styles.title}>{`${item}`}</Text>
+    </Pressable>
   );
 
   return (

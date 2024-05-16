@@ -1,7 +1,9 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
+import { Text, View } from "@/components/Themed";
+
 
 type SongDetailsRouteProp = RouteProp<RootStackParamList, "SongDetails">;
 

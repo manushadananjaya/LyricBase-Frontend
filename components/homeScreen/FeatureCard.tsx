@@ -23,8 +23,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
       <Text style={styles.cardContent}>{content}</Text>
       <Pressable
         style={({ pressed }) => [
-          styles.button,
-          { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          styles.button,{ backgroundColor: pressed ? buttonPressedColor : buttonColor },
         ]}
         onPress={onPress}
       >

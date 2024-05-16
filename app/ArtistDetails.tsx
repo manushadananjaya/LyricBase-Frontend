@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Pressable, FlatList } from "react-native";
+import { StyleSheet,  Pressable, FlatList } from "react-native";
+import { Text, View } from "@/components/Themed";
 import axios, { AxiosResponse } from "axios"; // Import AxiosResponse for correct typing
 import { useNavigation, RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
+import { useThemeColor } from "@/components/Themed";
+
+
 
 type ArtistDetailsRouteProp = RouteProp<RootStackParamList, "ArtistDetails">;
 
@@ -13,6 +17,9 @@ interface Song {
 }
 
 export default function ArtistDetails() {
+
+    const buttonColor = useThemeColor({}, "button");
+    const buttonPressedColor = useThemeColor({}, "buttonPressed");  
   const route = useRoute<ArtistDetailsRouteProp>();
   const { artist } = route.params;
   const [artistSongs, setArtistSongs] = useState<Song[]>([]);
@@ -34,7 +41,10 @@ export default function ArtistDetails() {
   }) => (
     <Pressable
       key={item.id}
-      style={({ pressed }) => [styles.item, pressed && styles.itemPressed]}
+      style={({ pressed }) => [
+        styles.item,
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+      ]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
       <Text style={styles.title}>
@@ -50,7 +60,7 @@ export default function ArtistDetails() {
       <FlatList
         data={artistSongs}
         renderItem={renderItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         contentContainerStyle={styles.list}
       />
     </View>

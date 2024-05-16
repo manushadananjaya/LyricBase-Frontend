@@ -50,7 +50,10 @@ export default function Search() {
   const renderItem = ({ item }: { item: Song }) => (
     <Pressable
       key={item.id}
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+      ]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
       <Text style={styles.title}>
@@ -167,6 +170,7 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,
+    marginHorizontal: 0,
     width: "100%",
     shadowColor: "#000",
     shadowOffset: {

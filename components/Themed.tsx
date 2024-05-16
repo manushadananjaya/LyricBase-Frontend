@@ -55,3 +55,6 @@ export function TextInput(props: TextInputProps) {
 
   return <DefaultTextInput style={[{ color }, style]} {...otherProps} />;
 }
+
+
+
