@@ -1,4 +1,3 @@
-// Chords.tsx
 import React, { useEffect, useState } from "react";
 import { StyleSheet, FlatList, Pressable } from "react-native";
 import { Text, View } from "@/components/Themed";
@@ -12,11 +11,8 @@ type ChordsScreenNavigationProp = StackNavigationProp<
   "Chords"
 >;
 
-type ChordsProps = {
-  navigation: ChordsScreenNavigationProp;
-};
-
-export default function Chords({ navigation }: ChordsProps) {
+export default function Chords() {
+  const navigation = useNavigation<ChordsScreenNavigationProp>();
   const [songs, setSongs] = useState<
     Array<{ id: number; title: string; artist: string }>
   >([]);
@@ -40,8 +36,10 @@ export default function Chords({ navigation }: ChordsProps) {
       style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.artist}>{item.artist}</Text>
+      <Text style={styles.title}>
+        {item.title}
+        <Text style={styles.artist}> {item.artist}</Text>
+      </Text>
     </Pressable>
   );
 
@@ -51,6 +49,7 @@ export default function Chords({ navigation }: ChordsProps) {
         data={songs}
         renderItem={renderItem}
         keyExtractor={(item, index) => `${item.id}-${index}`}
+        contentContainerStyle={styles.listContent}
       />
     </View>
   );
@@ -59,14 +58,16 @@ export default function Chords({ navigation }: ChordsProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 30,
+    width: "100%", 
+  },
+  listContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 10, 
   },
   card: {
     backgroundColor: "#fff",
     padding: 15,
-    marginVertical: 10,
+    marginVertical: 5,
     borderRadius: 10,
     width: "100%",
     shadowColor: "#000",
