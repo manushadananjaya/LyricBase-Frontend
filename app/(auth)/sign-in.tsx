@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import useLogin from "@/hooks/useLogin";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 
 const SignIn: React.FC = () => {
   const {
@@ -35,7 +35,7 @@ const SignIn: React.FC = () => {
 
     const response = await handleSignIn();
     if (response.success) {
-      router.replace("/(tabs)");
+      router.push("/(tabs)/Home");
     }
   };
 
@@ -65,7 +65,7 @@ const SignIn: React.FC = () => {
       <Button
         title="Sign Up"
         onPress={() => {
-          router.push("/sign-up");
+          router.push("/(auth)/sign-up");
         }}
       />
     </View>
