@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { Alert } from "react-native";
+import { useAuthContext } from "./useAuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface SignUpResponse {
   success: boolean;
@@ -14,6 +16,7 @@ const useSignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { dispatch } = useAuthContext();
 
   const handleSignUp = async (): Promise<SignUpResponse> => {
     setLoading(true);
@@ -43,6 +46,9 @@ const useSignUp = () => {
       });
 
       if (response.status === 201 && response.data) {
+        await AsyncStorage.setItem("user", JSON.stringify(response.data));
+        dispatch({ type: "LOGIN", payload: response.data });
+
         Alert.alert("Signup successful");
         return { success: true };
       } else {

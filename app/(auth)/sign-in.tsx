@@ -35,7 +35,7 @@ const SignIn: React.FC = () => {
 
     const response = await handleSignIn();
     if (response.success) {
-      router.push("/home");
+      router.replace("/(tabs)");
     }
   };
 
