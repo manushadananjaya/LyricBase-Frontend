@@ -40,13 +40,14 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <AuthContextProvider>
-        <Stack>
+        <Stack initialRouteName="Index">
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="Index" />
           <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
           <Stack.Screen name="SongDetails" />
           <Stack.Screen name="ArtistDetails" />
+          <Stack.Screen name="+not-found" />
         </Stack>
       </AuthContextProvider>
     </ThemeProvider>
