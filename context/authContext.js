@@ -1,17 +1,27 @@
+// context/AuthContext.js
 import { createContext, useReducer, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const AuthContext = createContext();
 
-export const authReducer = (state, action) => {
+const initialState = {
+  user: null,
+  loading: true, // Initialize with loading state
+};
+
+const authReducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
       return {
+        ...state,
         user: action.payload,
+        loading: false,
       };
     case "LOGOUT":
       return {
+        ...state,
         user: null,
+        loading: false,
       };
     case "UPDATE_ACCESS_TOKEN":
       return {
@@ -21,15 +31,18 @@ export const authReducer = (state, action) => {
           accessToken: action.payload,
         },
       };
+    case "LOADING_COMPLETE":
+      return {
+        ...state,
+        loading: false,
+      };
     default:
       return state;
   }
 };
 
 export const AuthContextProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(authReducer, {
-    user: null,
-  });
+  const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -38,9 +51,12 @@ export const AuthContextProvider = ({ children }) => {
         if (userString) {
           const user = JSON.parse(userString);
           dispatch({ type: "LOGIN", payload: user });
+        } else {
+          dispatch({ type: "LOADING_COMPLETE" });
         }
       } catch (error) {
         console.error("Failed to load user from AsyncStorage", error);
+        dispatch({ type: "LOADING_COMPLETE" });
       }
     };
 

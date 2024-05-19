@@ -5,7 +5,6 @@ import { useLogout } from "@/hooks/useLogout";
 
 export default function ProfileScreen() {
   const { handleLogout } = useLogout();
-  
 
   return (
     <View style={styles.container}>

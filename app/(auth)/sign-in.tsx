@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import useLogin from "@/hooks/useLogin";
-import { Link, router } from "expo-router";
+import { Stack, router } from "expo-router";
 
 const SignIn: React.FC = () => {
   const {
@@ -17,14 +17,11 @@ const SignIn: React.FC = () => {
   const [clearErrorTimeout, setClearErrorTimeout] =
     useState<NodeJS.Timeout | null>(null);
 
-    
-
   useEffect(() => {
     if (error && clearErrorTimeout === null) {
       const timeout = setTimeout(() => {
         clearError();
         setClearErrorTimeout(null);
-
       }, 3000); // 3 seconds
       setClearErrorTimeout(timeout);
     }
@@ -32,43 +29,46 @@ const SignIn: React.FC = () => {
 
   const signInAndNavigate = async () => {
     clearError();
-
     const response = await handleSignIn();
     if (response.success) {
-      router.push("/(tabs)/Home");
+      router.replace("/(tabs)/Home");
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      <Button title="Sign In" onPress={signInAndNavigate} disabled={loading} />
-
-      {error && <Text style={styles.error}>{error}</Text>}
-
-      <Button
-        title="Sign Up"
-        onPress={() => {
-          router.push("/(auth)/sign-up");
-        }}
-      />
-    </View>
+    <>
+      <Stack.Screen options={{ headerLeft: () => null }} />
+      <View style={styles.container}>
+        <Text style={styles.title}>Sign In</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        <Button
+          title="Sign In"
+          onPress={signInAndNavigate}
+          disabled={loading}
+        />
+        {error && <Text style={styles.error}>{error}</Text>}
+        <Button
+          title="Sign Up"
+          onPress={() => {
+            router.push("/(auth)/sign-up");
+          }}
+        />
+      </View>
+    </>
   );
 };
 
