@@ -14,6 +14,8 @@ interface Song {
   id: number;
   title: string;
   artist: string;
+  _id: string;
+  
 }
 
 export default function ArtistDetails() {

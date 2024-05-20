@@ -20,7 +20,7 @@ export default function Chords() {
  
   const navigation = useNavigation<ChordsScreenNavigationProp>();
   const [songs, setSongs] = useState<
-    Array<{ id: number; title: string; artist: string }>
+    Array<{ id: number; title: string; artist: string ;_id:string ; pdfKey : string}>
   >([]);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function Chords() {
   const renderItem = ({
     item,
   }: {
-    item: { id: number; title: string; artist: string };
+    item: { id: number; title: string; artist: string ;_id:string ; pdfKey : string};
   }) => (
     <Pressable
       key={item.id}
