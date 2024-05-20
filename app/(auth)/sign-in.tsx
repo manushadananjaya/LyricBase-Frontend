@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { StyleSheet, Pressable } from "react-native";
 import useLogin from "@/hooks/useLogin";
 import { Stack, router } from "expo-router";
+import { useThemeColor } from "@/components/Themed";
+import { Text, View, TextInput } from "@/components/Themed";
 
 const SignIn: React.FC = () => {
   const {
@@ -16,6 +18,9 @@ const SignIn: React.FC = () => {
   } = useLogin();
   const [clearErrorTimeout, setClearErrorTimeout] =
     useState<NodeJS.Timeout | null>(null);
+
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
   useEffect(() => {
     if (error && clearErrorTimeout === null) {
@@ -55,18 +60,28 @@ const SignIn: React.FC = () => {
           onChangeText={setPassword}
           secureTextEntry
         />
-        <Button
-          title="Sign In"
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          ]}
           onPress={signInAndNavigate}
           disabled={loading}
-        />
+        >
+          <Text style={styles.buttonText}>Sign In</Text>
+        </Pressable>
         {error && <Text style={styles.error}>{error}</Text>}
-        <Button
-          title="Sign Up"
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          ]}
           onPress={() => {
             router.push("/(auth)/sign-up");
           }}
-        />
+        >
+          <Text style={styles.buttonText}>Sign Up</Text>
+        </Pressable>
       </View>
     </>
   );
@@ -91,6 +106,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+    alignItems: "center",
+    marginVertical: 10,
+    width: "100%",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
   },
   error: {
     color: "red",
