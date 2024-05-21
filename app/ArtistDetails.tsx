@@ -5,7 +5,7 @@ import axios, { AxiosResponse } from "axios"; // Import AxiosResponse for correc
 import { useNavigation, RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
 import { useThemeColor } from "@/components/Themed";
-
+import apiClient from "@/services/authService";
 
 
 type ArtistDetailsRouteProp = RouteProp<RootStackParamList, "ArtistDetails">;
@@ -28,8 +28,8 @@ export default function ArtistDetails() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3000/artists/${artist}`) // Adjust the API endpoint to fetch songs by the artist
+    apiClient
+      .get(`/artists/${artist}`) // Adjust the API endpoint to fetch songs by the artist
       .then((response: AxiosResponse<Song[]>) => {
         setArtistSongs(response.data);
       })

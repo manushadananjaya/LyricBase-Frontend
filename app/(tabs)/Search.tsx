@@ -7,10 +7,10 @@ import {
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
 import { useThemeColor } from "@/components/Themed";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
+import apiClient from "@/services/authService";
 
 type SearchScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -37,8 +37,8 @@ export default function Search() {
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
       setLoading(true);
-      axios
-        .get<Song[]>(`http://localhost:3000/songs/song`, {
+      apiClient
+        .get<Song[]>(`/songs/song`, {
           params: { search: searchQuery, filter },
         })
         .then((response) => setSongs(response.data))

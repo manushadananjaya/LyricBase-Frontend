@@ -12,6 +12,7 @@ import axios from "axios";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
+import apiClient from "@/services/authService";
 
 type EditPlaylistScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -40,8 +41,8 @@ export default function EditPlaylistScreen() {
   const navigation = useNavigation<EditPlaylistScreenNavigationProp>();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3000/playlists/${playlistId}`)
+    apiClient
+      .get(`/playlists/${playlistId}`)
       .then((response) => {
         setPlaylistName(response.data.title);
         setSelectedSongs(response.data.songs);
@@ -52,8 +53,8 @@ export default function EditPlaylistScreen() {
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
       setLoading(true);
-      axios
-        .get<Song[]>(`http://localhost:3000/songs`, {
+      apiClient
+        .get<Song[]>(`/songs`, {
           params: { search: searchQuery },
         })
         .then((response) => setSongs(response.data))
@@ -70,8 +71,8 @@ export default function EditPlaylistScreen() {
       songs: selectedSongs.map((song) => song._id),
     };
 
-    axios
-      .put(`http://localhost:3000/playlists/${playlistId}`, playlistData)
+    apiClient
+      .put(`/playlists/${playlistId}`, playlistData)
       .then(() => navigation.navigate("Playlists"))
       .catch((error) => console.error(error));
   };

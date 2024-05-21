@@ -6,12 +6,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 // Get user from context
 import { useAuthContext } from "@/hooks/useAuthContext";
+import apiClient from "@/services/authService";
 
 type CreatePlaylistScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -34,12 +34,12 @@ export default function CreatePlaylistScreen() {
   const navigation = useNavigation<CreatePlaylistScreenNavigationProp>();
 
   // Get user from context
-  const { user } = useAuthContext();
+  // const { user } = useAuthContext();
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
       setLoading(true);
-      axios
+      apiClient
         .get<Song[]>(`http://localhost:3000/songs`, {
           params: { search: searchQuery },
         })
@@ -55,11 +55,11 @@ export default function CreatePlaylistScreen() {
     const playlistData = {
       title: playlistName,
       songs: selectedSongs,
-      user: user.user._id,
+      // user: user.user._id,
     };
 
-    axios
-      .post(`http://localhost:3000/playlists/`, playlistData)
+    apiClient
+      .post(`/playlists/`, playlistData)
       .then(() => navigation.navigate("Playlists"))
       .catch((error) => console.error(error));
   };
