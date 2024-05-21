@@ -4,7 +4,6 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
-  ScrollView,
   View,
   TextInput,
   Text,
@@ -113,7 +112,7 @@ export default function EditPlaylistScreen() {
   );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.titleMain}>Edit Playlist</Text>
         <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
@@ -152,18 +151,18 @@ export default function EditPlaylistScreen() {
           data={selectedSongs}
           renderItem={renderSelectedSong}
           keyExtractor={(item) => item._id}
-        //   horizontal
-        //   showsHorizontalScrollIndicator={false}
+          horizontal
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.selectedListContent}
         />
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     alignItems: "center",
     paddingTop: 50,
     paddingHorizontal: 20,
@@ -200,7 +199,7 @@ const styles = StyleSheet.create({
   },
   selectedSongsContainer: {
     width: "100%",
-    marginBottom: 50,
+    marginBottom: 20,
     marginTop: 20,
   },
   subtitle: {
@@ -246,7 +245,6 @@ const styles = StyleSheet.create({
   selectedCard: {
     backgroundColor: "#f0f0f0",
     padding: 10,
-    height: 50,
     marginVertical: 5,
     marginRight: 10,
     borderRadius: 10,
