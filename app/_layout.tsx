@@ -53,6 +53,7 @@ function RootLayoutNav() {
             <Stack.Screen name="ArtistDetails" />
             <Stack.Screen name="CreatePlaylist" />
             <Stack.Screen name="EditPlaylist" />
+            <Stack.Screen name="SelectedSongScreen" />
           </Stack>
         </AuthContextProvider>
       </ThemeProvider>

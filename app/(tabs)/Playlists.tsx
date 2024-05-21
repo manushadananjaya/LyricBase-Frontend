@@ -66,7 +66,7 @@ export default function Playlists() {
     <Pressable
       style={styles.playlistCard}
       onPress={() =>
-        navigation.navigate("EditPlaylist", { playlistId: item._id })
+        navigation.navigate("SelectedSongScreen", { playlistId: item._id })
       }
     >
       <Text style={styles.playlistTitle}>{item.title}</Text>

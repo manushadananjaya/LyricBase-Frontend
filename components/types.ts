@@ -18,4 +18,5 @@ export type RootStackParamList = {
   Playlists: undefined; // Screen for displaying user playlists
   CreatePlaylist: undefined; // Screen for creating a new playlist
   EditPlaylist: { playlistId: string }; // Screen for editing an existing playlist
+  SelectedSongs: { playlistId: string }; // Screen for displaying selected songs of a playlist
 };
