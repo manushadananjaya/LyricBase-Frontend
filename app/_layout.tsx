@@ -51,6 +51,8 @@ function RootLayoutNav() {
             <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
             <Stack.Screen name="SongDetails" />
             <Stack.Screen name="ArtistDetails" />
+            <Stack.Screen name="CreatePlaylist" />
+            <Stack.Screen name="EditPlaylist" />
           </Stack>
         </AuthContextProvider>
       </ThemeProvider>

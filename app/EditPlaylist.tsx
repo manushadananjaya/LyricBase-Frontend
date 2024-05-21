@@ -1,0 +1,282 @@
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  Pressable,
+  FlatList,
+  ActivityIndicator,
+  ScrollView,
+  View,
+  TextInput,
+  Text,
+} from "react-native";
+import axios from "axios";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "@/components/types";
+
+type EditPlaylistScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "EditPlaylist"
+>;
+
+interface Song {
+  id: number;
+  title: string;
+  artist: string;
+  _id: string;
+}
+
+interface RouteParams {
+  playlistId: string;
+}
+
+export default function EditPlaylistScreen() {
+  const route = useRoute();
+  const { playlistId } = route.params as RouteParams;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [playlistName, setPlaylistName] = useState("");
+  const navigation = useNavigation<EditPlaylistScreenNavigationProp>();
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:3000/playlists/${playlistId}`)
+      .then((response) => {
+        setPlaylistName(response.data.title);
+        setSelectedSongs(response.data.songs);
+      })
+      .catch((error) => console.error(error));
+  }, [playlistId]);
+
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      setLoading(true);
+      axios
+        .get<Song[]>(`http://localhost:3000/songs`, {
+          params: { search: searchQuery },
+        })
+        .then((response) => setSongs(response.data))
+        .catch((error) => console.error(error))
+        .finally(() => setLoading(false));
+    } else {
+      setSongs([]);
+    }
+  }, [searchQuery]);
+
+  const handleSavePlaylist = () => {
+    const playlistData = {
+      name: playlistName,
+      songs: selectedSongs.map((song) => song._id),
+    };
+
+    axios
+      .put(`http://localhost:3000/playlists/${playlistId}`, playlistData)
+      .then(() => navigation.navigate("Playlists"))
+      .catch((error) => console.error(error));
+  };
+
+  const handleSelectSong = (song: Song) => {
+    setSelectedSongs((prev) =>
+      prev.find((s) => s._id === song._id)
+        ? prev.filter((s) => s._id !== song._id)
+        : [...prev, song]
+    );
+  };
+
+  const renderItem = ({ item }: { item: Song }) => (
+    <Pressable
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: pressed ? "#ddd" : "#fff" },
+      ]}
+      onPress={() => handleSelectSong(item)}
+    >
+      <Text style={styles.title}>
+        {item.title}
+        <Text style={styles.artist}> {item.artist}</Text>
+      </Text>
+      {selectedSongs.find((song) => song._id === item._id) && (
+        <Text style={styles.added}>Added</Text>
+      )}
+    </Pressable>
+  );
+
+  const renderSelectedSong = ({ item }: { item: Song }) => (
+    <View style={styles.selectedCard}>
+      <Text style={styles.selectedTitle}>
+        {item.title}
+        <Text style={styles.selectedArtist}> {item.artist}</Text>
+      </Text>
+    </View>
+  );
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.titleMain}>Edit Playlist</Text>
+        <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
+          <Text style={styles.saveButtonText}>Save</Text>
+        </Pressable>
+      </View>
+
+      <TextInput
+        style={styles.playlistNameInput}
+        placeholder="Playlist Name"
+        value={playlistName}
+        onChangeText={setPlaylistName}
+      />
+
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search songs"
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={songs}
+          renderItem={renderItem}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
+
+      <View style={styles.selectedSongsContainer}>
+        <Text style={styles.subtitle}>Selected Songs</Text>
+        <FlatList
+          data={selectedSongs}
+          renderItem={renderSelectedSong}
+          keyExtractor={(item) => item._id}
+        //   horizontal
+        //   showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.selectedListContent}
+        />
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    alignItems: "center",
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    backgroundColor: "#f7f7f7",
+  },
+  header: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  titleMain: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  playlistNameInput: {
+    width: "100%",
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 10,
+    fontSize: 16,
+    backgroundColor: "#fff",
+  },
+  saveButton: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  selectedSongsContainer: {
+    width: "100%",
+    marginBottom: 50,
+    marginTop: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  searchBar: {
+    width: "100%",
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
+    fontSize: 16,
+    backgroundColor: "#fff",
+  },
+  listContent: {
+    flexGrow: 1,
+    width: "100%",
+  },
+  selectedListContent: {
+    flexGrow: 0,
+    paddingBottom: 20,
+  },
+  card: {
+    backgroundColor: "#fff",
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 10,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  selectedCard: {
+    backgroundColor: "#f0f0f0",
+    padding: 10,
+    height: 50,
+    marginVertical: 5,
+    marginRight: 10,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  artist: {
+    fontSize: 14,
+    color: "#888",
+  },
+  selectedTitle: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  selectedArtist: {
+    fontSize: 12,
+    color: "#888",
+  },
+  added: {
+    color: "green",
+    fontWeight: "bold",
+  },
+});
