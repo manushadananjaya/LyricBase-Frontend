@@ -10,7 +10,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
-//get user from conext
+// Get user from context
 import { useAuthContext } from "@/hooks/useAuthContext";
 
 type CreatePlaylistScreenNavigationProp = StackNavigationProp<
@@ -33,11 +33,8 @@ export default function CreatePlaylistScreen() {
   const [playlistName, setPlaylistName] = useState("");
   const navigation = useNavigation<CreatePlaylistScreenNavigationProp>();
 
-  //get user from context
+  // Get user from context
   const { user } = useAuthContext();
-
-  // console.log("user from create", user.user._id);
-  
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
@@ -60,7 +57,6 @@ export default function CreatePlaylistScreen() {
       songs: selectedSongs,
       user: user.user._id,
     };
-    console.log("playlistData", playlistData);
 
     axios
       .post(`http://localhost:3000/playlists/`, playlistData)
@@ -96,7 +92,12 @@ export default function CreatePlaylistScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titleMain}>Create Playlist</Text>
+      <View style={styles.header}>
+        <Text style={styles.titleMain}>Create Playlist</Text>
+        <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
+          <Text style={styles.saveButtonText}>Save Playlist</Text>
+        </Pressable>
+      </View>
       <TextInput
         style={styles.playlistNameInput}
         placeholder="Playlist Name"
@@ -119,9 +120,6 @@ export default function CreatePlaylistScreen() {
           contentContainerStyle={styles.listContent}
         />
       )}
-      <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
-        <Text style={styles.saveButtonText}>Save Playlist</Text>
-      </Pressable>
     </View>
   );
 }
@@ -135,10 +133,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: "100%",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
     marginBottom: 20,
+  },
+  titleMain: {
+    fontSize: 28,
+    fontWeight: "bold",
   },
   playlistNameInput: {
     width: "100%",
@@ -180,8 +184,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  titleMain: {
-    fontSize: 20,
+  title: {
+    fontSize: 18,
     fontWeight: "bold",
   },
   artist: {
@@ -196,7 +200,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#007BFF",
     padding: 10,
     borderRadius: 5,
-    marginTop: 20,
+    marginLeft: 10,
   },
   saveButtonText: {
     color: "#fff",

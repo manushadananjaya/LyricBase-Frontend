@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Pressable,
@@ -6,9 +6,9 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { Text, View, TextInput } from "@/components/Themed";
+import { Text, View } from "@/components/Themed";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 
@@ -29,13 +29,20 @@ export default function Playlists() {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation<PlaylistsScreenNavigationProp>();
 
-  useEffect(() => {
+  const fetchPlaylists = useCallback(() => {
+    setLoading(true);
     axios
       .get<Playlist[]>(`http://localhost:3000/playlists/`)
       .then((response) => setPlaylists(response.data))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPlaylists();
+    }, [fetchPlaylists])
+  );
 
   const deletePlaylist = (id: string) => {
     Alert.alert(
@@ -50,8 +57,8 @@ export default function Playlists() {
             axios
               .delete(`http://localhost:3000/playlists/${id}`)
               .then(() =>
-                setPlaylists(
-                  playlists.filter((playlist) => playlist._id !== id)
+                setPlaylists((prevPlaylists) =>
+                  prevPlaylists.filter((playlist) => playlist._id !== id)
                 )
               )
               .catch((error) => console.error(error));
@@ -62,7 +69,6 @@ export default function Playlists() {
   };
 
   const renderItem = ({ item }: { item: Playlist }) => (
-    // console.log("item of playlist", item._id),
     <Pressable
       style={styles.playlistCard}
       onPress={() =>

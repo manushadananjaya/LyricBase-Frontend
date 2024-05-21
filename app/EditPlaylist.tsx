@@ -66,7 +66,7 @@ export default function EditPlaylistScreen() {
 
   const handleSavePlaylist = () => {
     const playlistData = {
-      name: playlistName,
+      title: playlistName,
       songs: selectedSongs.map((song) => song._id),
     };
 
