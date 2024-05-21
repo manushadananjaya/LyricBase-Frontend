@@ -11,30 +11,16 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/components/useColorScheme";
+import { AuthContextProvider } from "@/context/authContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
+  const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
 
   useEffect(() => {
     if (loaded) {
@@ -53,13 +39,21 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
-        <Stack.Screen name="SongDetails" />
-      </Stack>
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <AuthContextProvider>
+          <Stack>
+            <Stack.Screen name="+not-found" />
+            {/* <Stack.Screen name="authLoadingScreen" options={{ headerShown: false }} /> */}
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="Index" />
+            <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
+            <Stack.Screen name="SongDetails" />
+            <Stack.Screen name="ArtistDetails" />
+          </Stack>
+        </AuthContextProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

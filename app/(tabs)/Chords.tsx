@@ -5,6 +5,8 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
+import { useThemeColor } from "@/components/Themed";
+
 
 type ChordsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -12,9 +14,13 @@ type ChordsScreenNavigationProp = StackNavigationProp<
 >;
 
 export default function Chords() {
+
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
+ 
   const navigation = useNavigation<ChordsScreenNavigationProp>();
   const [songs, setSongs] = useState<
-    Array<{ id: number; title: string; artist: string }>
+    Array<{ id: number; title: string; artist: string ;_id:string ; pdfKey : string}>
   >([]);
 
   useEffect(() => {
@@ -29,11 +35,14 @@ export default function Chords() {
   const renderItem = ({
     item,
   }: {
-    item: { id: number; title: string; artist: string };
+    item: { id: number; title: string; artist: string ;_id:string ; pdfKey : string};
   }) => (
     <Pressable
       key={item.id}
-      style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+      ]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
       <Text style={styles.title}>
@@ -65,7 +74,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10, 
   },
   card: {
-    backgroundColor: "#fff",
+    
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,

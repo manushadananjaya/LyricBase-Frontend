@@ -1,40 +1,43 @@
-import { Link, Stack } from 'expo-router';
-import { StyleSheet } from 'react-native';
+// screens/AuthLoadingScreen.js
+import React, { useEffect } from "react";
+import { ActivityIndicator, View, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import { useAuthContext } from "@/hooks/useAuthContext"; // Adjust the path as necessary
 
-import { Text, View } from '@/components/Themed';
+const AuthLoadingScreen = () => {
+  const { user, loading } = useAuthContext();
+  const router = useRouter();
 
-export default function NotFoundScreen() {
-  return (
-    <>
-      <Stack.Screen options={{ title: 'Oops!' }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>This screen doesn't exist.</Text>
+  useEffect(() => {
+    console.log("Loading:", loading, "User:", user);
+    if (!loading) {
+      if (user) {
+        router.replace("/Home"); // Navigate to home screen if signed in
+      } else {
+        router.replace("/sign-in"); // Navigate to sign-in screen if not signed in
+      }
+    }
+  }, [loading, user]);
 
-        <Link href="/Home" style={styles.link}>
-          <Text style={styles.linkText}>Go to home screen!</Text>
-        </Link>
+
+  // Show a loading indicator while checking auth status
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
-    </>
-  );
-}
+    );
+  }
+
+  return null;
+};
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-  linkText: {
-    fontSize: 14,
-    color: '#2e78b7',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
+
+export default AuthLoadingScreen;
