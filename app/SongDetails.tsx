@@ -3,7 +3,7 @@ import { StyleSheet, ActivityIndicator, Image } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
 import { Text, View } from "@/components/Themed";
-import axios from "axios";
+import apiClient from "@/services/authService";
 
 type SongDetailsRouteProp = RouteProp<RootStackParamList, "SongDetails">;
 
@@ -16,8 +16,8 @@ export default function SongDetails() {
   useEffect(() => {
     const fetchImageUrl = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/songs/song/${song._id}/image`
+        const response = await apiClient.get(
+          `/songs/song/${song._id}/image`
         );
         console.log("response", response.data.url);
         setImageUrl(response.data.url);

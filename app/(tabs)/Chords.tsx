@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import { useThemeColor } from "@/components/Themed";
-
+import apiClient from "@/services/authService";
 
 type ChordsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -24,8 +24,8 @@ export default function Chords() {
   >([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/songs/")
+    apiClient
+      .get("/songs/")
       .then((response) => {
         setSongs(response.data);
       })

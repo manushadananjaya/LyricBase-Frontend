@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
+import apiClient from "@/services/authService";
 
 type SelectedSongsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -29,8 +30,8 @@ export default function SelectedSongsScreen() {
   const navigation = useNavigation<SelectedSongsScreenNavigationProp>();
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:3000/playlists/${playlistId}`)
+    apiClient
+      .get(`/playlists/${playlistId}`)
       .then((response) => {
         setPlaylistName(response.data.title);
         setSelectedSongs(response.data.songs);

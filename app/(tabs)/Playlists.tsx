@@ -7,10 +7,10 @@ import {
   Alert,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
-import axios from "axios";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
+import apiClient from "@/services/authService";
 
 type PlaylistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -31,8 +31,8 @@ export default function Playlists() {
 
   const fetchPlaylists = useCallback(() => {
     setLoading(true);
-    axios
-      .get<Playlist[]>(`http://localhost:3000/playlists/`)
+    apiClient
+      .get<Playlist[]>(`/playlists/`)
       .then((response) => setPlaylists(response.data))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
@@ -54,8 +54,8 @@ export default function Playlists() {
           text: "Delete",
           style: "destructive",
           onPress: () => {
-            axios
-              .delete(`http://localhost:3000/playlists/${id}`)
+            apiClient
+              .delete(`/playlists/${id}`)
               .then(() =>
                 setPlaylists((prevPlaylists) =>
                   prevPlaylists.filter((playlist) => playlist._id !== id)

@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import { useThemeColor } from "@/components/Themed";
+import apiClient from "@/services/authService";
 
 type ArtistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -25,8 +26,8 @@ export default function Artists() {
   const [artists, setArtists] = useState<Artist[]>([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/artists/")
+    apiClient
+      .get("/artists/")
       .then((response) => {
         setArtists(response.data);
       })
