@@ -10,6 +10,8 @@ const handleLogout = async () => {
     await AsyncStorage.removeItem("user");
     dispatch({ type: "LOGOUT" });
 
+    console.log("User logged out" , AsyncStorage.getItem("user"));
+
     //clear expo navigation history and redirect to sign-in
     navigation.reset({
         index: 0,

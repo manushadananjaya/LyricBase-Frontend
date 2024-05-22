@@ -2,9 +2,16 @@ import { StatusBar } from "expo-status-bar";
 import { Platform, StyleSheet, Button } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useLogout } from "@/hooks/useLogout";
+import {useAuthContext} from "@/hooks/useAuthContext";
 
 export default function ProfileScreen() {
   const { handleLogout } = useLogout();
+
+  const user = useAuthContext();
+  if (!user) {
+    return;
+  }
+  
 
   return (
     <View style={styles.container}>
@@ -14,6 +21,7 @@ export default function ProfileScreen() {
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
+      <Text> Helloo {user?.user?.user?.email}</Text>
       <Button title="Logout" onPress={handleLogout} />
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
     </View>
