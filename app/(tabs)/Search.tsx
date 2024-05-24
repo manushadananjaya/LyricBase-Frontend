@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
 import { useThemeColor } from "@/components/Themed";
+import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
@@ -25,31 +26,54 @@ interface Song {
   pdfKey: string;
 }
 
+interface Playlist {
+  title: ReactNode;
+  id: number;
+  name: string;
+  createdBy: string;
+  _id: string;
+}
+
 export default function Search() {
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
   const [searchQuery, setSearchQuery] = useState("");
-  const [filter, setFilter] = useState<"name" | "artist">("name");
+  const [filter, setFilter] = useState<"name" | "artist" | "playlist">("name");
   const [songs, setSongs] = useState<Song[]>([]);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<SearchScreenNavigationProp>();
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
       setLoading(true);
-      apiClient
-        .get<Song[]>(`/songs/song`, {
-          params: { search: searchQuery, filter },
-        })
-        .then((response) => setSongs(response.data))
-        .catch((error) => console.error(error))
-        .finally(() => setLoading(false));
+      if (filter === "playlist") {
+        // console.log("searching playlists");
+        apiClient
+          .get<Playlist[]>(`playlists/playlist/search`, {
+            params: { search: searchQuery, filter },
+          })
+          .then((response) => setPlaylists(response.data))
+          .catch((error) => console.error(error))
+          .finally(() => setLoading(false));
+      } else {
+        apiClient
+          .get<Song[]>(`/songs/song`, {
+            params: { search: searchQuery, filter },
+          })
+          .then((response) => setSongs(response.data))
+          .catch((error) => console.error(error))
+          .finally(() => setLoading(false));
+      }
     } else {
       setSongs([]);
+      setPlaylists([]);
     }
   }, [searchQuery, filter]);
 
-  const renderItem = ({ item }: { item: Song }) => (
+  console.log( playlists);
+
+  const renderSongItem = ({ item }: { item: Song }) => (
     <Pressable
       key={item.id}
       style={({ pressed }) => [
@@ -65,12 +89,28 @@ export default function Search() {
     </Pressable>
   );
 
+  const renderPlaylistItem = ({ item }: { item: Playlist }) => (
+    <Pressable
+      key={item.id}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+      ]}
+      onPress={() => navigation.navigate("PlaylistDetails", { playlist: item })}
+    >
+      <Text style={styles.title}>
+        {item.title}
+        <Text style={styles.artist}> by {item.name}</Text>
+      </Text>
+    </Pressable>
+  );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.titleSearch}>Search Songs</Text>
+      <Text style={styles.titleSearch}>Search Songs and Playlists</Text>
       <TextInput
         style={styles.searchBar}
-        placeholder="Search songs by name or artist"
+        placeholder="Search songs by name, artist or playlists"
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
@@ -95,6 +135,16 @@ export default function Search() {
         >
           <Text style={styles.filterText}>By Artist</Text>
         </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.filterButton,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+            filter === "playlist" && styles.activeFilter,
+          ]}
+          onPress={() => setFilter("playlist")}
+        >
+          <Text style={styles.filterText}>By Playlist</Text>
+        </Pressable>
       </View>
       <View
         style={styles.separator}
@@ -105,8 +155,10 @@ export default function Search() {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <FlatList
-          data={songs}
-          renderItem={renderItem}
+          data={filter === "playlist" ? playlists : songs}
+          renderItem={
+            filter === "playlist" ? renderPlaylistItem : renderSongItem
+          }
           keyExtractor={(item, index) => `${item.id}-${index}`}
           contentContainerStyle={styles.listContent}
         />
