@@ -101,7 +101,7 @@ export default function Search() {
 
   const renderSongItem = ({ item }: { item: Song }) => (
     <Pressable
-      key={item.id}
+      key={item._id}
       style={({ pressed }) => [
         styles.card,
         { backgroundColor: pressed ? buttonPressedColor : buttonColor },
@@ -117,7 +117,6 @@ export default function Search() {
 
   const renderPlaylistItem = ({ item }: { item: Playlist }) => {
     const user = userDetails[item.user] || { name: "Loading..." };
-
     return (
       <Pressable
         key={item._id}
@@ -126,7 +125,17 @@ export default function Search() {
           { backgroundColor: pressed ? buttonPressedColor : buttonColor },
         ]}
         onPress={() =>
-          navigation.navigate("PlaylistDetails", { playlist: item })
+          navigation.navigate("PlaylistDetails", {
+            playlist: {
+              id: item._id,
+              title: item.title,
+              userPlay: {
+                _id: item.user,
+                name: user.name,
+              },
+              songIds: item.songs,
+            },
+          })
         }
       >
         <Text style={styles.title}>
@@ -191,7 +200,7 @@ export default function Search() {
           renderItem={
             filter === "playlist" ? renderPlaylistItem : renderSongItem
           }
-          keyExtractor={(item, index) => `${item._id}-${index}`}
+          keyExtractor={(item, index) => `${item._id}-${index}`} // Ensure unique keys
           contentContainerStyle={styles.listContent}
         />
       )}
@@ -241,37 +250,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   separator: {
-    marginVertical: 10,
     height: 1,
-    width: "80%",
+    width: "100%",
+    marginBottom: 20,
   },
   listContent: {
-    flexGrow: 1,
     width: "100%",
-    paddingHorizontal: 20,
-    paddingBottom: 10,
   },
   card: {
-    backgroundColor: "#fff",
-    padding: 15,
-    marginVertical: 5,
-    borderRadius: 10,
-    marginHorizontal: 0,
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    marginBottom: 10,
     width: "100%",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-  },
-  cardPressed: {
-    opacity: 0.5,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
   },
   artist: {

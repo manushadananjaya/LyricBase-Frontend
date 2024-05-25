@@ -15,8 +15,26 @@ export type RootStackParamList = {
   Guitar: undefined;
   Artists: undefined;
   ArtistDetails: { artist: { id: number; name: string } };
-  Playlists: undefined; // Screen for displaying user playlists
-  CreatePlaylist: undefined; // Screen for creating a new playlist
-  EditPlaylist: { playlistId: string }; // Screen for editing an existing playlist
-  SelectedSongs: { playlistId: string }; // Screen for displaying selected songs of a playlist
+  Playlists: undefined;
+  CreatePlaylist: undefined;
+  EditPlaylist: { playlistId: string };
+  SelectedSongs: { playlistId: string };
+  PlaylistDetails: {
+    playlist: {
+      [x: string]: any;
+      id: string;
+      title: string;
+      userPlay: {
+        _id: string;
+        name: string;
+      };
+      songs: {
+        id: number;
+        title: string;
+        artist: string;
+        _id: string;
+        pdfKey: string;
+      }[];
+    };
+  };
 };
