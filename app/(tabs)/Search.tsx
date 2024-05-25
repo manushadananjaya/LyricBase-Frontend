@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
 import { useThemeColor } from "@/components/Themed";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
@@ -27,11 +26,15 @@ interface Song {
 }
 
 interface Playlist {
-  title: ReactNode;
-  id: number;
-  name: string;
-  createdBy: string;
   _id: string;
+  title: string;
+  user: string;
+  songs: string[];
+}
+
+interface User {
+  _id: string;
+  name: string;
 }
 
 export default function Search() {
@@ -41,19 +44,44 @@ export default function Search() {
   const [filter, setFilter] = useState<"name" | "artist" | "playlist">("name");
   const [songs, setSongs] = useState<Song[]>([]);
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [userDetails, setUserDetails] = useState<Record<string, User>>({});
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<SearchScreenNavigationProp>();
 
   useEffect(() => {
+    const fetchUserDetails = async (userIds: string[]) => {
+      try {
+        const uniqueUserIds = [...new Set(userIds)];
+        const userDetailPromises = uniqueUserIds.map((userId) =>
+          apiClient.get<User>(`/users/${userId}`)
+        );
+        const userDetailResponses = await Promise.all(userDetailPromises);
+        const userDetailsMap = userDetailResponses.reduce(
+          (acc, response) => ({
+            ...acc,
+            [response.data._id]: response.data,
+          }),
+          {}
+        );
+        setUserDetails(userDetailsMap);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     if (searchQuery.trim().length > 0) {
       setLoading(true);
       if (filter === "playlist") {
-        // console.log("searching playlists");
         apiClient
-          .get<Playlist[]>(`playlists/playlist/search`, {
+          .get<{ playlists: Playlist[] }>(`/playlists/playlist/search`, {
             params: { search: searchQuery, filter },
           })
-          .then((response) => setPlaylists(response.data))
+          .then((response) => {
+            const playlists = response.data.playlists || [];
+            setPlaylists(playlists);
+            const userIds = playlists.map((playlist) => playlist.user);
+            fetchUserDetails(userIds);
+          })
           .catch((error) => console.error(error))
           .finally(() => setLoading(false));
       } else {
@@ -71,8 +99,6 @@ export default function Search() {
     }
   }, [searchQuery, filter]);
 
-  console.log( playlists);
-
   const renderSongItem = ({ item }: { item: Song }) => (
     <Pressable
       key={item.id}
@@ -89,21 +115,27 @@ export default function Search() {
     </Pressable>
   );
 
-  const renderPlaylistItem = ({ item }: { item: Playlist }) => (
-    <Pressable
-      key={item.id}
-      style={({ pressed }) => [
-        styles.card,
-        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
-      ]}
-      onPress={() => navigation.navigate("PlaylistDetails", { playlist: item })}
-    >
-      <Text style={styles.title}>
-        {item.title}
-        <Text style={styles.artist}> by {item.name}</Text>
-      </Text>
-    </Pressable>
-  );
+  const renderPlaylistItem = ({ item }: { item: Playlist }) => {
+    const user = userDetails[item.user] || { name: "Loading..." };
+
+    return (
+      <Pressable
+        key={item._id}
+        style={({ pressed }) => [
+          styles.card,
+          { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+        ]}
+        onPress={() =>
+          navigation.navigate("PlaylistDetails", { playlist: item })
+        }
+      >
+        <Text style={styles.title}>
+          {item.title}
+          <Text style={styles.artist}> by {user.name}</Text>
+        </Text>
+      </Pressable>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -159,7 +191,7 @@ export default function Search() {
           renderItem={
             filter === "playlist" ? renderPlaylistItem : renderSongItem
           }
-          keyExtractor={(item, index) => `${item.id}-${index}`}
+          keyExtractor={(item, index) => `${item._id}-${index}`}
           contentContainerStyle={styles.listContent}
         />
       )}
