@@ -18,7 +18,7 @@ export type RootStackParamList = {
   Playlists: undefined;
   CreatePlaylist: undefined;
   EditPlaylist: { playlistId: string };
-  SelectedSongs: { playlistId: string };
+  SelectedSongs: { playlistId: string , isEditable: boolean };
   PlaylistDetails: {
     playlist: {
       [x: string]: any;

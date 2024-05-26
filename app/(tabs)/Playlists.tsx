@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Pressable,
   FlatList,
   ActivityIndicator,
   Alert,
+  Animated,
+  PanResponder,
+  View,
+  Easing,
 } from "react-native";
-import { Text, View } from "@/components/Themed";
+import { Text } from "@/components/Themed";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@/components/types";
 import apiClient from "@/services/authService";
@@ -57,6 +61,15 @@ export default function Playlists() {
     }, [fetchPlaylists, fetchSavedPlaylists])
   );
 
+  useEffect(() => {
+    Animated.timing(translateY, {
+      toValue: 480, // Slide the panel to a higher initial position
+      duration: 300,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const deletePlaylist = (id: string, isSaved: boolean) => {
     Alert.alert(
       "Delete Playlist",
@@ -90,39 +103,51 @@ export default function Playlists() {
     );
   };
 
-  const renderPlaylistItem = ({ item }: { item: Playlist }) => (
-    <Pressable
-      style={styles.playlistCard}
-      onPress={() =>
-        navigation.navigate("SelectedSongScreen", {
-          playlistId: item._id,
-          isEditable: true,
-        })
-      }
-    >
-      <Text style={styles.playlistTitle}>{item.title}</Text>
-      <Pressable onPress={() => deletePlaylist(item._id, false)}>
-        <Text style={styles.deleteButton}>Delete</Text>
-      </Pressable>
-    </Pressable>
-  );
+  const translateY = useRef(new Animated.Value(0)).current; // Start from a higher position
+  const lastGestureDy = useRef(0);
 
-  const renderSavedPlaylistItem = ({ item }: { item: Playlist }) => (
-    <Pressable
-      style={styles.playlistCard}
-      onPress={() =>
-        navigation.navigate("SelectedSongScreen", {
-          playlistId: item._id,
-          isEditable: false,
-        })
-      }
-    >
-      <Text style={styles.playlistTitle}>{item.title}</Text>
-      <Pressable onPress={() => deletePlaylist(item._id, true)}>
-        <Text style={styles.deleteButton}>Delete</Text>
-      </Pressable>
-    </Pressable>
-  );
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return Math.abs(gestureState.dy) > 10;
+      },
+      onPanResponderMove: (e, gestureState) => {
+        translateY.setValue(lastGestureDy.current + gestureState.dy);
+      },
+      onPanResponderRelease: (e, gestureState) => {
+        lastGestureDy.current += gestureState.dy;
+        // Check if the gesture ended below or above a certain threshold, if yes, animate the playlists accordingly
+        const shouldOpen = gestureState.dy > 30;
+        const shouldClose = gestureState.dy < -20;
+
+        if (shouldOpen) {
+          Animated.timing(translateY, {
+            toValue: 480,
+            duration: 300,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }).start(() => {
+            lastGestureDy.current = 480;
+          });
+        } else if (shouldClose) {
+          Animated.timing(translateY, {
+            toValue: 0,
+            duration: 300,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }).start(() => {
+            lastGestureDy.current = 0;
+          });
+        } else {
+          Animated.spring(translateY, {
+            toValue: lastGestureDy.current,
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    })
+  ).current;
 
   return (
     <View style={styles.container}>
@@ -138,25 +163,69 @@ export default function Playlists() {
       ) : (
         <FlatList
           data={playlists}
-          renderItem={renderPlaylistItem}
+          renderItem={({ item }) => (
+            <PlaylistItem
+              item={item}
+              onDelete={() => deletePlaylist(item._id, false)}
+              onPress={() =>
+                navigation.navigate("SelectedSongScreen", {
+                  playlistId: item._id,
+                  isEditable: true,
+                })
+              }
+            />
+          )}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
         />
       )}
-      <Text style={styles.title}>Saved Playlists</Text>
-      {loadingSaved ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <FlatList
-          data={savedPlaylists}
-          renderItem={renderSavedPlaylistItem}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.listContent}
-        />
-      )}
+      <Animated.View
+        style={[
+          styles.savedPlaylistsContainer,
+          { transform: [{ translateY }] },
+        ]}
+      >
+        <View {...panResponder.panHandlers}>
+          <Pressable style={styles.savedPlaylistsHeader}>
+            <Text style={styles.savedPlaylistsHeaderText}>Saved Playlists</Text>
+          </Pressable>
+        </View>
+        <View style={styles.savedPlaylistsContent}>
+          {loadingSaved ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <FlatList
+              data={savedPlaylists}
+              renderItem={({ item }) => (
+                <PlaylistItem
+                  item={item}
+                  onDelete={() => deletePlaylist(item._id, true)}
+                  onPress={() =>
+                    navigation.navigate("SelectedSongScreen", {
+                      playlistId: item._id,
+                      isEditable: false,
+                    })
+                  }
+                />
+              )}
+              keyExtractor={(item) => item._id}
+              contentContainerStyle={styles.listContentSongs}
+            />
+          )}
+        </View>
+      </Animated.View>
     </View>
   );
 }
+
+const PlaylistItem = ({ item, onDelete, onPress }) => (
+  <Pressable style={styles.playlistCard} onPress={onPress}>
+    <Text style={styles.playlistTitle}>{item.title}</Text>
+    <Pressable onPress={onDelete}>
+      <Text style={styles.deleteButton}>Delete</Text>
+    </Pressable>
+  </Pressable>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -210,5 +279,45 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     color: "red",
+    fontWeight: "bold",
+    borderRadius: 10,
+    padding: 5,
+    backgroundColor: "#f0f0f0",
+  },
+  savedPlaylistsContainer: {
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 10,
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
+    maxHeight: 700, // Set the maximum height for the saved playlists container
+    
+  },
+  savedPlaylistsHeader: {
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  savedPlaylistsHeaderText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  savedPlaylistsContent: {
+    flex: 1,
+  },
+  listContentSongs: {
+    paddingBottom: 20,
   },
 });
+
+export { Playlists };

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 
-const BASE_URL = "http://localhost:3000";
+export const BASE_URL = "https://0e85-2402-d000-8128-2d61-f5ee-3c8f-c6da-dbc0.ngrok-free.app";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -18,15 +18,11 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config;
 

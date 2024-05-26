@@ -40,7 +40,7 @@ export default function CreatePlaylistScreen() {
     if (searchQuery.trim().length > 0) {
       setLoading(true);
       apiClient
-        .get<Song[]>(`http://localhost:3000/songs`, {
+        .get<Song[]>(`/songs`, {
           params: { search: searchQuery },
         })
         .then((response) => setSongs(response.data))

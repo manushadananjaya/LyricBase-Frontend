@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { useAuthContext } from "./useAuthContext";
+import { useAuthContext } from "./useAuthContext"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/services/authService"; 
 
 interface SignInResponse {
   success: boolean;
@@ -19,7 +20,6 @@ const useLogin = () => {
   const handleSignIn = async (): Promise<SignInResponse> => {
     setLoading(true);
 
-    // Check if email and password are not empty
     if (!email || !password) {
       setError("Please fill all fields");
       setLoading(false);
@@ -27,7 +27,7 @@ const useLogin = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/auth/signin", {
+      const response = await axios.post(`${BASE_URL}/auth/signin`, {
         email,
         password,
       });

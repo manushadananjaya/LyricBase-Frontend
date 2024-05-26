@@ -3,6 +3,8 @@ import axios from "axios";
 import { Alert } from "react-native";
 import { useAuthContext } from "./useAuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/services/authService"; 
+
 
 interface SignUpResponse {
   success: boolean;
@@ -39,7 +41,7 @@ const useSignUp = () => {
     
 
     try {
-      const response = await axios.post("http://localhost:3000/auth/signup", {
+      const response = await axios.post(`${BASE_URL}/auth/signup`, {
         name,
         email,
         password,

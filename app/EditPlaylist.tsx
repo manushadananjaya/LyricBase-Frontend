@@ -8,7 +8,6 @@ import {
   TextInput,
   Text,
 } from "react-native";
-import axios from "axios";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
@@ -28,11 +27,12 @@ interface Song {
 
 interface RouteParams {
   playlistId: string;
+  isEditable: boolean;
 }
 
 export default function EditPlaylistScreen() {
   const route = useRoute();
-  const { playlistId } = route.params as RouteParams;
+  const { playlistId, isEditable } = route.params as RouteParams;
   const [searchQuery, setSearchQuery] = useState("");
   const [songs, setSongs] = useState<Song[]>([]);
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
@@ -71,8 +71,11 @@ export default function EditPlaylistScreen() {
       songs: selectedSongs.map((song) => song._id),
     };
 
-    apiClient
-      .put(`/playlists/${playlistId}`, playlistData)
+    const request = isEditable
+      ? apiClient.put(`/playlists/${playlistId}`, playlistData)
+      : apiClient.post(`/playlists`, playlistData);
+
+    request
       .then(() => navigation.navigate("Playlists"))
       .catch((error) => console.error(error));
   };
@@ -117,7 +120,9 @@ export default function EditPlaylistScreen() {
       <View style={styles.header}>
         <Text style={styles.titleMain}>Edit Playlist</Text>
         <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
-          <Text style={styles.saveButtonText}>Save</Text>
+          <Text style={styles.saveButtonText}>
+            {isEditable ? "Save" : "Save as New Playlist"}
+          </Text>
         </Pressable>
       </View>
 

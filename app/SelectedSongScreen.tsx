@@ -19,7 +19,7 @@ interface Song {
 
 interface RouteParams {
   playlistId: string;
-  isEditable: boolean; 
+  isEditable: boolean;
 }
 
 export default function SelectedSongsScreen() {
@@ -55,14 +55,15 @@ export default function SelectedSongsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.titleMain}>{playlistName}</Text>
-        {isEditable && ( 
-          <Pressable
-            style={styles.editButton}
-            onPress={() => navigation.navigate("EditPlaylist", { playlistId })}
-          >
-            <Text style={styles.editButtonText}>Edit this Playlist</Text>
-          </Pressable>
-        )}
+
+        <Pressable
+          style={styles.editButton}
+          onPress={() =>
+            navigation.navigate("EditPlaylist", { playlistId, isEditable })
+          }
+        >
+          <Text style={styles.editButtonText}>Edit this Playlist</Text>
+        </Pressable>
       </View>
       <View style={styles.selectedSongsContainer}>
         <Text style={styles.subtitle}>Selected Songs</Text>
