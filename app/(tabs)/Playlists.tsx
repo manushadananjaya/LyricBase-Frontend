@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   StyleSheet,
   Pressable,
@@ -61,15 +61,6 @@ export default function Playlists() {
     }, [fetchPlaylists, fetchSavedPlaylists])
   );
 
-  useEffect(() => {
-    Animated.timing(translateY, {
-      toValue: 480, // Slide the panel to a higher initial position
-      duration: 300,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
   const deletePlaylist = (id: string, isSaved: boolean) => {
     Alert.alert(
       "Delete Playlist",
@@ -103,7 +94,7 @@ export default function Playlists() {
     );
   };
 
-  const translateY = useRef(new Animated.Value(0)).current; // Start from a higher position
+  const translateY = useRef(new Animated.Value(0)).current;
   const lastGestureDy = useRef(0);
 
   const panResponder = useRef(
@@ -113,24 +104,27 @@ export default function Playlists() {
         return Math.abs(gestureState.dy) > 10;
       },
       onPanResponderMove: (e, gestureState) => {
-        translateY.setValue(lastGestureDy.current + gestureState.dy);
+        const newTranslateY = lastGestureDy.current + gestureState.dy;
+        if (newTranslateY < -300) {
+          translateY.setValue(-300);
+        } else if (newTranslateY > 0) {
+          translateY.setValue(0);
+        } else {
+          translateY.setValue(newTranslateY);
+        }
       },
       onPanResponderRelease: (e, gestureState) => {
         lastGestureDy.current += gestureState.dy;
-        // Check if the gesture ended below or above a certain threshold, if yes, animate the playlists accordingly
         const shouldOpen = gestureState.dy > 30;
         const shouldClose = gestureState.dy < -20;
 
+        if (lastGestureDy.current < -300) {
+          lastGestureDy.current = -300;
+        } else if (lastGestureDy.current > 0) {
+          lastGestureDy.current = 0;
+        }
+
         if (shouldOpen) {
-          Animated.timing(translateY, {
-            toValue: 480,
-            duration: 300,
-            easing: Easing.out(Easing.ease),
-            useNativeDriver: true,
-          }).start(() => {
-            lastGestureDy.current = 480;
-          });
-        } else if (shouldClose) {
           Animated.timing(translateY, {
             toValue: 0,
             duration: 300,
@@ -138,6 +132,15 @@ export default function Playlists() {
             useNativeDriver: true,
           }).start(() => {
             lastGestureDy.current = 0;
+          });
+        } else if (shouldClose) {
+          Animated.timing(translateY, {
+            toValue: -300,
+            duration: 300,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }).start(() => {
+            lastGestureDy.current = -300;
           });
         } else {
           Animated.spring(translateY, {
@@ -182,7 +185,9 @@ export default function Playlists() {
       <Animated.View
         style={[
           styles.savedPlaylistsContainer,
-          { transform: [{ translateY }] },
+          {
+            transform: [{ translateY: translateY }],
+          },
         ]}
       >
         <View {...panResponder.panHandlers}>
@@ -193,6 +198,10 @@ export default function Playlists() {
         <View style={styles.savedPlaylistsContent}>
           {loadingSaved ? (
             <ActivityIndicator size="large" color="#0000ff" />
+          ) : savedPlaylists.length === 0 ? (
+            <View style={styles.noSavedPlaylists}>
+              <Text>No saved playlists</Text>
+            </View>
           ) : (
             <FlatList
               data={savedPlaylists}
@@ -301,8 +310,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    maxHeight: 700, // Set the maximum height for the saved playlists container
-    
+    height: 300, // Adjust the height for the saved playlists container
   },
   savedPlaylistsHeader: {
     alignItems: "center",
@@ -318,6 +326,13 @@ const styles = StyleSheet.create({
   listContentSongs: {
     paddingBottom: 20,
   },
+  noSavedPlaylists: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
 });
 
 export { Playlists };
+
