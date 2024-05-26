@@ -8,9 +8,9 @@ import {
 } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "@/components/types";
+import { StackNavigationProp } from "@/components/types";
 import apiClient from "@/services/authService";
+import { useAuthContext } from "@/hooks/useAuthContext";
 
 type PlaylistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -18,7 +18,7 @@ type PlaylistsScreenNavigationProp = StackNavigationProp<
 >;
 
 interface Playlist {
-  title: any;
+  title: string;
   _id: string;
   name: string;
   songs: Song[];
@@ -26,22 +26,35 @@ interface Playlist {
 
 export default function Playlists() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [savedPlaylists, setSavedPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingSaved, setLoadingSaved] = useState(true);
   const navigation = useNavigation<PlaylistsScreenNavigationProp>();
+  const { user } = useAuthContext();
 
   const fetchPlaylists = useCallback(() => {
     setLoading(true);
     apiClient
-      .get<Playlist[]>(`/playlists/`)
+      .get<Playlist[]>("/playlists/")
       .then((response) => setPlaylists(response.data))
       .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, []);
 
+  const fetchSavedPlaylists = useCallback(() => {
+    setLoadingSaved(true);
+    apiClient
+      .get<Playlist[]>("/playlists/saved")
+      .then((response) => setSavedPlaylists(response.data))
+      .catch((error) => console.error(error))
+      .finally(() => setLoadingSaved(false));
+  }, [user?._id]);
+
   useFocusEffect(
     useCallback(() => {
       fetchPlaylists();
-    }, [fetchPlaylists])
+      fetchSavedPlaylists();
+    }, [fetchPlaylists, fetchSavedPlaylists])
   );
 
   const deletePlaylist = (id: string) => {
@@ -56,11 +69,14 @@ export default function Playlists() {
           onPress: () => {
             apiClient
               .delete(`/playlists/${id}`)
-              .then(() =>
+              .then(() => {
                 setPlaylists((prevPlaylists) =>
                   prevPlaylists.filter((playlist) => playlist._id !== id)
-                )
-              )
+                );
+                setSavedPlaylists((prevSavedPlaylists) =>
+                  prevSavedPlaylists.filter((playlist) => playlist._id !== id)
+                );
+              })
               .catch((error) => console.error(error));
           },
         },
@@ -68,11 +84,31 @@ export default function Playlists() {
     );
   };
 
-  const renderItem = ({ item }: { item: Playlist }) => (
+  const renderPlaylistItem = ({ item }: { item: Playlist }) => (
     <Pressable
       style={styles.playlistCard}
       onPress={() =>
-        navigation.navigate("SelectedSongScreen", { playlistId: item._id })
+        navigation.navigate("SelectedSongScreen", {
+          playlistId: item._id,
+          isEditable: true, 
+        })
+      }
+    >
+      <Text style={styles.playlistTitle}>{item.title}</Text>
+      <Pressable onPress={() => deletePlaylist(item._id)}>
+        <Text style={styles.deleteButton}>Delete</Text>
+      </Pressable>
+    </Pressable>
+  );
+
+  const renderSavedPlaylistItem = ({ item }: { item: Playlist }) => (
+    <Pressable
+      style={styles.playlistCard}
+      onPress={() =>
+        navigation.navigate("SelectedSongScreen", {
+          playlistId: item._id,
+          isEditable: false, 
+        })
       }
     >
       <Text style={styles.playlistTitle}>{item.title}</Text>
@@ -96,7 +132,18 @@ export default function Playlists() {
       ) : (
         <FlatList
           data={playlists}
-          renderItem={renderItem}
+          renderItem={renderPlaylistItem}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.listContent}
+        />
+      )}
+      <Text style={styles.title}>Saved Playlists</Text>
+      {loadingSaved ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={savedPlaylists}
+          renderItem={renderSavedPlaylistItem}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
         />

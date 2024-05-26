@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
+// import { useAuthContext } from "@/hooks/useAuthContext";
 
 type PlaylistDetailsRouteProp = RouteProp<
   RootStackParamList,
@@ -34,17 +35,16 @@ export default function PlaylistDetails() {
   const { playlist } = route.params;
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+//   const { user } = useAuthContext();
 
   useEffect(() => {
     const fetchSongs = async () => {
       try {
-        const songPromises = playlist.songIds.map((songId: any) =>
+        const songPromises = playlist.songIds.map((songId: string) =>
           apiClient.get<Song>(`/songs/song/${songId}`)
         );
         const songResponses = await Promise.all(songPromises);
-        const fetchedSongs = songResponses.map(
-          (response: { data: any }) => response.data
-        );
+        const fetchedSongs = songResponses.map((response) => response.data);
         setSongs(fetchedSongs);
       } catch (error) {
         console.error(error);
@@ -68,9 +68,20 @@ export default function PlaylistDetails() {
     </Pressable>
   );
 
-  const handleSavePlaylist = () => {
-    // Add your save playlist logic here
-    console.log("Playlist saved!");
+  const handleSavePlaylist = async () => {
+    try {
+      const response = await apiClient.post(`/playlists/save`, {
+        playlistId: playlist.id,
+      });
+      if (response.status === 200) {
+        alert("Playlist saved successfully!");
+      } else {
+        alert("Failed to save playlist.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while saving the playlist.");
+    }
   };
 
   return (

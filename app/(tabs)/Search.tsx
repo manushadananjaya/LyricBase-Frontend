@@ -69,39 +69,41 @@ export default function Search() {
       }
     };
 
-    if (searchQuery.trim().length > 0) {
-      setLoading(true);
-      if (filter === "playlist") {
-        apiClient
-          .get<{ playlists: Playlist[] }>(`/playlists/playlist/search`, {
-            params: { search: searchQuery, filter },
-          })
-          .then((response) => {
-            const playlists = response.data.playlists || [];
+    const fetchData = async () => {
+      if (searchQuery.trim().length > 0) {
+        setLoading(true);
+        try {
+          if (filter === "playlist") {
+            const response = await apiClient.get<Playlist[]>(
+              `/playlists/playlist/search`,
+              { params: { search: searchQuery, filter } }
+            );
+            const playlists = response.data || [];
             setPlaylists(playlists);
             const userIds = playlists.map((playlist) => playlist.user);
-            fetchUserDetails(userIds);
-          })
-          .catch((error) => console.error(error))
-          .finally(() => setLoading(false));
+            await fetchUserDetails(userIds);
+          } else {
+            const response = await apiClient.get<Song[]>(`/songs/song`, {
+              params: { search: searchQuery, filter },
+            });
+            setSongs(response.data);
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
       } else {
-        apiClient
-          .get<Song[]>(`/songs/song`, {
-            params: { search: searchQuery, filter },
-          })
-          .then((response) => setSongs(response.data))
-          .catch((error) => console.error(error))
-          .finally(() => setLoading(false));
+        setSongs([]);
+        setPlaylists([]);
       }
-    } else {
-      setSongs([]);
-      setPlaylists([]);
-    }
+    };
+
+    fetchData();
   }, [searchQuery, filter]);
 
   const renderSongItem = ({ item }: { item: Song }) => (
     <Pressable
-      key={item._id}
       style={({ pressed }) => [
         styles.card,
         { backgroundColor: pressed ? buttonPressedColor : buttonColor },
@@ -119,7 +121,6 @@ export default function Search() {
     const user = userDetails[item.user] || { name: "Loading..." };
     return (
       <Pressable
-        key={item._id}
         style={({ pressed }) => [
           styles.card,
           { backgroundColor: pressed ? buttonPressedColor : buttonColor },
@@ -200,7 +201,7 @@ export default function Search() {
           renderItem={
             filter === "playlist" ? renderPlaylistItem : renderSongItem
           }
-          keyExtractor={(item, index) => `${item._id}-${index}`} // Ensure unique keys
+          keyExtractor={(item) => item._id} // Ensure unique keys
           contentContainerStyle={styles.listContent}
         />
       )}

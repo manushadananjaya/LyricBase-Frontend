@@ -1,12 +1,11 @@
-// context/AuthContext.js
-import { createContext, useReducer, useEffect } from "react";
+import React, { createContext, useReducer, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const AuthContext = createContext();
 
 const initialState = {
   user: null,
-  loading: true, // Initialize with loading state
+  loading: true,
 };
 
 const authReducer = (state, action) => {
