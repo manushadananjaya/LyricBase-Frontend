@@ -57,7 +57,7 @@ export default function Playlists() {
     }, [fetchPlaylists, fetchSavedPlaylists])
   );
 
-  const deletePlaylist = (id: string) => {
+  const deletePlaylist = (id: string, isSaved: boolean) => {
     Alert.alert(
       "Delete Playlist",
       "Are you sure you want to delete this playlist?",
@@ -67,15 +67,21 @@ export default function Playlists() {
           text: "Delete",
           style: "destructive",
           onPress: () => {
-            apiClient
-              .delete(`/playlists/${id}`)
+            const deleteRequest = isSaved
+              ? apiClient.delete(`/playlists/saved/${id}`)
+              : apiClient.delete(`/playlists/${id}`);
+
+            deleteRequest
               .then(() => {
-                setPlaylists((prevPlaylists) =>
-                  prevPlaylists.filter((playlist) => playlist._id !== id)
-                );
-                setSavedPlaylists((prevSavedPlaylists) =>
-                  prevSavedPlaylists.filter((playlist) => playlist._id !== id)
-                );
+                if (isSaved) {
+                  setSavedPlaylists((prevSavedPlaylists) =>
+                    prevSavedPlaylists.filter((playlist) => playlist._id !== id)
+                  );
+                } else {
+                  setPlaylists((prevPlaylists) =>
+                    prevPlaylists.filter((playlist) => playlist._id !== id)
+                  );
+                }
               })
               .catch((error) => console.error(error));
           },
@@ -90,12 +96,12 @@ export default function Playlists() {
       onPress={() =>
         navigation.navigate("SelectedSongScreen", {
           playlistId: item._id,
-          isEditable: true, 
+          isEditable: true,
         })
       }
     >
       <Text style={styles.playlistTitle}>{item.title}</Text>
-      <Pressable onPress={() => deletePlaylist(item._id)}>
+      <Pressable onPress={() => deletePlaylist(item._id, false)}>
         <Text style={styles.deleteButton}>Delete</Text>
       </Pressable>
     </Pressable>
@@ -107,12 +113,12 @@ export default function Playlists() {
       onPress={() =>
         navigation.navigate("SelectedSongScreen", {
           playlistId: item._id,
-          isEditable: false, 
+          isEditable: false,
         })
       }
     >
       <Text style={styles.playlistTitle}>{item.title}</Text>
-      <Pressable onPress={() => deletePlaylist(item._id)}>
+      <Pressable onPress={() => deletePlaylist(item._id, true)}>
         <Text style={styles.deleteButton}>Delete</Text>
       </Pressable>
     </Pressable>

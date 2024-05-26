@@ -46,6 +46,7 @@ export default function Search() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [userDetails, setUserDetails] = useState<Record<string, User>>({});
   const [loading, setLoading] = useState(false);
+  const [noResults, setNoResults] = useState(false);
   const navigation = useNavigation<SearchScreenNavigationProp>();
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function Search() {
     const fetchData = async () => {
       if (searchQuery.trim().length > 0) {
         setLoading(true);
+        setNoResults(false);
         try {
           if (filter === "playlist") {
             const response = await apiClient.get<Playlist[]>(
@@ -80,22 +82,30 @@ export default function Search() {
             );
             const playlists = response.data || [];
             setPlaylists(playlists);
+            if (playlists.length === 0) setNoResults(true);
             const userIds = playlists.map((playlist) => playlist.user);
             await fetchUserDetails(userIds);
           } else {
             const response = await apiClient.get<Song[]>(`/songs/song`, {
               params: { search: searchQuery, filter },
             });
-            setSongs(response.data);
+            const songs = response.data || [];
+            setSongs(songs);
+            if (songs.length === 0) setNoResults(true);
           }
         } catch (error) {
-          console.error(error);
+          if (error.response && error.response.status === 404) {
+            setNoResults(true);
+          } else {
+            console.error(error);
+          }
         } finally {
           setLoading(false);
         }
       } else {
         setSongs([]);
         setPlaylists([]);
+        setNoResults(false);
       }
     };
 
@@ -195,6 +205,8 @@ export default function Search() {
       />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
+      ) : noResults ? (
+        <Text style={styles.noResultsText}>No results found</Text>
       ) : (
         <FlatList
           data={filter === "playlist" ? playlists : songs}
@@ -271,6 +283,10 @@ const styles = StyleSheet.create({
   },
   artist: {
     fontSize: 16,
+    color: "#888",
+  },
+  noResultsText: {
+    fontSize: 18,
     color: "#888",
   },
 });
