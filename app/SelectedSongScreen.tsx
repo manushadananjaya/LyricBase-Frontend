@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Pressable, FlatList, View, Text } from "react-native";
-import axios from "axios";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
@@ -20,11 +19,12 @@ interface Song {
 
 interface RouteParams {
   playlistId: string;
+  isEditable: boolean; 
 }
 
 export default function SelectedSongsScreen() {
   const route = useRoute();
-  const { playlistId } = route.params as RouteParams;
+  const { playlistId, isEditable } = route.params as RouteParams;
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
   const [playlistName, setPlaylistName] = useState("");
   const navigation = useNavigation<SelectedSongsScreenNavigationProp>();
@@ -55,12 +55,14 @@ export default function SelectedSongsScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.titleMain}>{playlistName}</Text>
-        <Pressable
-          style={styles.editButton}
-          onPress={() => navigation.navigate("EditPlaylist", { playlistId })}
-        >
-          <Text style={styles.editButtonText}>Edit this Playlist</Text>
-        </Pressable>
+        {isEditable && ( 
+          <Pressable
+            style={styles.editButton}
+            onPress={() => navigation.navigate("EditPlaylist", { playlistId })}
+          >
+            <Text style={styles.editButtonText}>Edit this Playlist</Text>
+          </Pressable>
+        )}
       </View>
       <View style={styles.selectedSongsContainer}>
         <Text style={styles.subtitle}>Selected Songs</Text>

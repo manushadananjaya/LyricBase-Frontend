@@ -6,10 +6,25 @@ import { useAuthContext } from "@/hooks/useAuthContext";
 
 export default function ProfileScreen() {
   const { handleLogout } = useLogout();
+  const { user, loading } = useAuthContext();
 
-  const user = useAuthContext();
+  // console.log("User:", user);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Loading...</Text>
+      </View>
+    );
+  }
+
   if (!user) {
-    return null;
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.errorText}>No user is logged in.</Text>
+      </View>
+    );
   }
 
   return (
@@ -20,8 +35,8 @@ export default function ProfileScreen() {
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       />
-      <Text style={styles.greeting}>Hello, {user?.user?.user?.name}!</Text>
-      <Text style={styles.mail}>{user?.user?.user?.email}</Text>
+      <Text style={styles.greeting}>Hello, {user.user.name}!</Text>
+      <Text style={styles.mail}>{user.user.email}</Text>
       <Pressable
         style={({ pressed }) => [
           {
@@ -79,5 +94,10 @@ const styles = StyleSheet.create({
     height: 1,
     width: "80%",
     backgroundColor: "#ccc",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
   },
 });

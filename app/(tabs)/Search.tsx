@@ -25,33 +25,85 @@ interface Song {
   pdfKey: string;
 }
 
+interface Playlist {
+  _id: string;
+  title: string;
+  user: string;
+  songs: string[];
+}
+
+interface User {
+  _id: string;
+  name: string;
+}
+
 export default function Search() {
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
   const [searchQuery, setSearchQuery] = useState("");
-  const [filter, setFilter] = useState<"name" | "artist">("name");
+  const [filter, setFilter] = useState<"name" | "artist" | "playlist">("name");
   const [songs, setSongs] = useState<Song[]>([]);
+  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [userDetails, setUserDetails] = useState<Record<string, User>>({});
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<SearchScreenNavigationProp>();
 
   useEffect(() => {
-    if (searchQuery.trim().length > 0) {
-      setLoading(true);
-      apiClient
-        .get<Song[]>(`/songs/song`, {
-          params: { search: searchQuery, filter },
-        })
-        .then((response) => setSongs(response.data))
-        .catch((error) => console.error(error))
-        .finally(() => setLoading(false));
-    } else {
-      setSongs([]);
-    }
+    const fetchUserDetails = async (userIds: string[]) => {
+      try {
+        const uniqueUserIds = [...new Set(userIds)];
+        const userDetailPromises = uniqueUserIds.map((userId) =>
+          apiClient.get<User>(`/users/${userId}`)
+        );
+        const userDetailResponses = await Promise.all(userDetailPromises);
+        const userDetailsMap = userDetailResponses.reduce(
+          (acc, response) => ({
+            ...acc,
+            [response.data._id]: response.data,
+          }),
+          {}
+        );
+        setUserDetails(userDetailsMap);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchData = async () => {
+      if (searchQuery.trim().length > 0) {
+        setLoading(true);
+        try {
+          if (filter === "playlist") {
+            const response = await apiClient.get<Playlist[]>(
+              `/playlists/playlist/search`,
+              { params: { search: searchQuery, filter } }
+            );
+            const playlists = response.data || [];
+            setPlaylists(playlists);
+            const userIds = playlists.map((playlist) => playlist.user);
+            await fetchUserDetails(userIds);
+          } else {
+            const response = await apiClient.get<Song[]>(`/songs/song`, {
+              params: { search: searchQuery, filter },
+            });
+            setSongs(response.data);
+          }
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setSongs([]);
+        setPlaylists([]);
+      }
+    };
+
+    fetchData();
   }, [searchQuery, filter]);
 
-  const renderItem = ({ item }: { item: Song }) => (
+  const renderSongItem = ({ item }: { item: Song }) => (
     <Pressable
-      key={item.id}
       style={({ pressed }) => [
         styles.card,
         { backgroundColor: pressed ? buttonPressedColor : buttonColor },
@@ -65,12 +117,42 @@ export default function Search() {
     </Pressable>
   );
 
+  const renderPlaylistItem = ({ item }: { item: Playlist }) => {
+    const user = userDetails[item.user] || { name: "Loading..." };
+    return (
+      <Pressable
+        style={({ pressed }) => [
+          styles.card,
+          { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+        ]}
+        onPress={() =>
+          navigation.navigate("PlaylistDetails", {
+            playlist: {
+              id: item._id,
+              title: item.title,
+              userPlay: {
+                _id: item.user,
+                name: user.name,
+              },
+              songIds: item.songs,
+            },
+          })
+        }
+      >
+        <Text style={styles.title}>
+          {item.title}
+          <Text style={styles.artist}> by {user.name}</Text>
+        </Text>
+      </Pressable>
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.titleSearch}>Search Songs</Text>
+      <Text style={styles.titleSearch}>Search Songs and Playlists</Text>
       <TextInput
         style={styles.searchBar}
-        placeholder="Search songs by name or artist"
+        placeholder="Search songs by name, artist or playlists"
         value={searchQuery}
         onChangeText={setSearchQuery}
       />
@@ -95,6 +177,16 @@ export default function Search() {
         >
           <Text style={styles.filterText}>By Artist</Text>
         </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.filterButton,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+            filter === "playlist" && styles.activeFilter,
+          ]}
+          onPress={() => setFilter("playlist")}
+        >
+          <Text style={styles.filterText}>By Playlist</Text>
+        </Pressable>
       </View>
       <View
         style={styles.separator}
@@ -105,9 +197,11 @@ export default function Search() {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <FlatList
-          data={songs}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
+          data={filter === "playlist" ? playlists : songs}
+          renderItem={
+            filter === "playlist" ? renderPlaylistItem : renderSongItem
+          }
+          keyExtractor={(item) => item._id} // Ensure unique keys
           contentContainerStyle={styles.listContent}
         />
       )}
@@ -157,37 +251,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   separator: {
-    marginVertical: 10,
     height: 1,
-    width: "80%",
+    width: "100%",
+    marginBottom: 20,
   },
   listContent: {
-    flexGrow: 1,
     width: "100%",
-    paddingHorizontal: 20,
-    paddingBottom: 10,
   },
   card: {
-    backgroundColor: "#fff",
-    padding: 15,
-    marginVertical: 5,
-    borderRadius: 10,
-    marginHorizontal: 0,
+    padding: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    marginBottom: 10,
     width: "100%",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-  },
-  cardPressed: {
-    opacity: 0.5,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
   },
   artist: {
