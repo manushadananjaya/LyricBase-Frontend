@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Pressable, FlatList, View, Text } from "react-native";
+import { StyleSheet, Pressable, FlatList, } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
 // import { useAuthContext } from "@/hooks/useAuthContext";
+import { useThemeColor } from "@/components/Themed";
+import { Text, View } from "@/components/Themed";
 
 type PlaylistDetailsRouteProp = RouteProp<
   RootStackParamList,
@@ -35,7 +37,9 @@ export default function PlaylistDetails() {
   const { playlist } = route.params;
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-//   const { user } = useAuthContext();
+    const buttonPressedColor = useThemeColor({}, "buttonPressed");
+    const buttonColor = useThemeColor({}, "button");
+
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -58,7 +62,10 @@ export default function PlaylistDetails() {
 
   const renderSongItem = ({ item }: { item: Song }) => (
     <Pressable
-      style={styles.songCard}
+      style={({ pressed }) => [
+        styles.songCard,
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+      ]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
       <Text style={styles.songTitle}>
@@ -88,7 +95,13 @@ export default function PlaylistDetails() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.titleMain}>{playlist.title}</Text>
-        <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.saveButton,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          ]}
+          onPress={handleSavePlaylist}
+        >
           <Text style={styles.saveButtonText}>Save this Playlist</Text>
         </Pressable>
       </View>
@@ -112,7 +125,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 50,
     paddingHorizontal: 20,
-    backgroundColor: "#f7f7f7",
+    // backgroundColor: "#f7f7f7",
   },
   header: {
     width: "100%",
@@ -153,11 +166,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   songCard: {
-    backgroundColor: "#f0f0f0",
-    padding: 10,
+    padding: 15,
     marginVertical: 5,
-    marginRight: 10,
     borderRadius: 10,
+    width: "100%",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -166,6 +178,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   songTitle: {
     fontSize: 14,
