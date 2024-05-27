@@ -94,8 +94,11 @@ export default function Playlists() {
     );
   };
 
-  const translateY = useRef(new Animated.Value(0)).current;
-  const lastGestureDy = useRef(0);
+  const initialHeight = 80;
+  const expandedHeight = 600;
+  const collapsedHeight = 80;
+
+  const height = useRef(new Animated.Value(initialHeight)).current;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -104,48 +107,37 @@ export default function Playlists() {
         return Math.abs(gestureState.dy) > 10;
       },
       onPanResponderMove: (e, gestureState) => {
-        const newTranslateY = lastGestureDy.current + gestureState.dy;
-        if (newTranslateY < -300) {
-          translateY.setValue(-300);
-        } else if (newTranslateY > 0) {
-          translateY.setValue(0);
+        const newHeight = height._value - gestureState.dy;
+        if (newHeight < collapsedHeight) {
+          height.setValue(collapsedHeight);
+        } else if (newHeight > expandedHeight) {
+          height.setValue(expandedHeight);
         } else {
-          translateY.setValue(newTranslateY);
+          height.setValue(newHeight);
         }
       },
       onPanResponderRelease: (e, gestureState) => {
-        lastGestureDy.current += gestureState.dy;
-        const shouldOpen = gestureState.dy > 30;
-        const shouldClose = gestureState.dy < -20;
+        const shouldExpand = gestureState.dy < -30;
+        const shouldCollapse = gestureState.dy > 30;
 
-        if (lastGestureDy.current < -300) {
-          lastGestureDy.current = -300;
-        } else if (lastGestureDy.current > 0) {
-          lastGestureDy.current = 0;
-        }
-
-        if (shouldOpen) {
-          Animated.timing(translateY, {
-            toValue: 0,
+        if (shouldExpand) {
+          Animated.timing(height, {
+            toValue: expandedHeight,
             duration: 300,
             easing: Easing.out(Easing.ease),
-            useNativeDriver: true,
-          }).start(() => {
-            lastGestureDy.current = 0;
-          });
-        } else if (shouldClose) {
-          Animated.timing(translateY, {
-            toValue: -300,
+            useNativeDriver: false,
+          }).start();
+        } else if (shouldCollapse) {
+          Animated.timing(height, {
+            toValue: collapsedHeight,
             duration: 300,
             easing: Easing.out(Easing.ease),
-            useNativeDriver: true,
-          }).start(() => {
-            lastGestureDy.current = -300;
-          });
+            useNativeDriver: false,
+          }).start();
         } else {
-          Animated.spring(translateY, {
-            toValue: lastGestureDy.current,
-            useNativeDriver: true,
+          Animated.spring(height, {
+            toValue: height._value,
+            useNativeDriver: false,
           }).start();
         }
       },
@@ -186,7 +178,7 @@ export default function Playlists() {
         style={[
           styles.savedPlaylistsContainer,
           {
-            transform: [{ translateY: translateY }],
+            height: height,
           },
         ]}
       >
@@ -310,7 +302,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    height: 300, // Adjust the height for the saved playlists container
   },
   savedPlaylistsHeader: {
     alignItems: "center",
@@ -335,4 +326,3 @@ const styles = StyleSheet.create({
 });
 
 export { Playlists };
-
