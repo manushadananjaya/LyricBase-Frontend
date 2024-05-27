@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { Text, View } from "@/components/Themed";
 import { StyleSheet, Pressable, FlatList, } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
 // import { useAuthContext } from "@/hooks/useAuthContext";
-import { useThemeColor } from "@/components/Themed";
-import { Text, View } from "@/components/Themed";
+
 
 type PlaylistDetailsRouteProp = RouteProp<
   RootStackParamList,

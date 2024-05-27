@@ -1,6 +1,4 @@
-import EditPlaylistScreen from "@/app/EditPlaylist";
-
-
+// Colors.ts
 const tintColorLight = "#5AB2FF";
 const tintColorDark = "#8CABFF";
 
@@ -17,12 +15,11 @@ export default {
     playlistCardBackgroundPressed: "#5AB2FF",
     deleteButton: "#FF5A5A",
     deleteButtonPressed: "#FF0000",
-
     savedPlaylistsHeader: "#5AB2FF",
-
     savedPlaylistsContentColor: "#fbf",
     savedPlaylistsContainerBackground: "#5AB2FF",
     editPlaylistSelectedSongCard: "#5AB2FF",
+    placeholder: "#888", 
   },
   dark: {
     text: "#fff",
@@ -36,10 +33,10 @@ export default {
     playlistCardBackgroundPressed: "#5AB2FF",
     deleteButton: "#FF5A5A",
     deleteButtonPressed: "#FF0000",
-
     savedPlaylistsHeader: "#5AC2FF",
     savedPlaylistsContentColor: "#383",
     savedPlaylistsContainerBackground: "#5AC2FF",
     editPlaylistSelectedSongCard: "#5AC2FF",
+    placeholder: "#aaa", 
   },
 };

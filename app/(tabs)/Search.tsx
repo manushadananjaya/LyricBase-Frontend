@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
-import { useThemeColor } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";

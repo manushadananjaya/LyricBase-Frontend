@@ -6,12 +6,14 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 // Get user from context
 import { useAuthContext } from "@/hooks/useAuthContext";
 import apiClient from "@/services/authService";
+
 
 type CreatePlaylistScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -32,6 +34,9 @@ export default function CreatePlaylistScreen() {
   const [loading, setLoading] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const navigation = useNavigation<CreatePlaylistScreenNavigationProp>();
+
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
   // Get user from context
   // const { user } = useAuthContext();
@@ -76,7 +81,7 @@ export default function CreatePlaylistScreen() {
     <Pressable
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: pressed ? "#ddd" : "#fff" },
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
       ]}
       onPress={() => handleSelectSong(item)}
     >
@@ -94,7 +99,13 @@ export default function CreatePlaylistScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.titleMain}>Create Playlist</Text>
-        <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.saveButton,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          ]}
+          onPress={handleSavePlaylist}
+        >
           <Text style={styles.saveButtonText}>Save Playlist</Text>
         </Pressable>
       </View>

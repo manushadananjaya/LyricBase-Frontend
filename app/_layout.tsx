@@ -1,18 +1,13 @@
+// RootLayout.tsx
+import React, { useEffect } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import "react-native-reanimated";
-
-import { useColorScheme } from "@/components/useColorScheme";
-import { AuthContextProvider } from "@/context/authContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { ThemeProvider } from "@/context/themeContext";
+import { AuthContextProvider } from "@/context/authContext";
+import { Stack } from "expo-router";
+import "react-native-reanimated";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,32 +27,31 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <ThemeProvider>
         <AuthContextProvider>
-          <Stack>
-            <Stack.Screen name="+not-found" />
-            {/* <Stack.Screen name="authLoadingScreen" options={{ headerShown: false }} /> */}
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="Index" />
-            <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
-            <Stack.Screen name="SongDetails" />
-            <Stack.Screen name="ArtistDetails" />
-            <Stack.Screen name="CreatePlaylist" />
-            <Stack.Screen name="EditPlaylist" />
-            <Stack.Screen name="SelectedSongScreen" />
-            <Stack.Screen name="PlaylistDetails" />
-          </Stack>
+          <RootLayoutNav />
         </AuthContextProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
+  );
+}
+
+function RootLayoutNav() {
+  return (
+    <Stack>
+      <Stack.Screen name="+not-found" />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="Index" />
+      <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
+      <Stack.Screen name="SongDetails" />
+      <Stack.Screen name="ArtistDetails" />
+      <Stack.Screen name="CreatePlaylist" />
+      <Stack.Screen name="EditPlaylist" />
+      <Stack.Screen name="SelectedSongScreen" />
+      <Stack.Screen name="PlaylistDetails" />
+    </Stack>
   );
 }

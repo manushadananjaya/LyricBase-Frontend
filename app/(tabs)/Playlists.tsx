@@ -10,11 +10,12 @@ import {
   Easing,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@/components/types";
 import apiClient from "@/services/authService";
 import { useAuthContext } from "@/hooks/useAuthContext";
-import { useThemeColor } from "@/components/Themed";
+
 
 type PlaylistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,

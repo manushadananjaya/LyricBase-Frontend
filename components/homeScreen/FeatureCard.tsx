@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Pressable } from "react-native";
 import { Text, View } from "@/components/Themed";
-import { useThemeColor } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor"
 
 interface FeatureCardProps {
   title: string;

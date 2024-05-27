@@ -6,12 +6,13 @@ import {
   ActivityIndicator,
   
 } from "react-native";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { Text, View, TextInput } from "@/components/Themed";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
-import { useThemeColor } from "@/components/Themed";
-import { Text, View, TextInput } from "@/components/Themed";
+
 
 type EditPlaylistScreenNavigationProp = StackNavigationProp<
   RootStackParamList,

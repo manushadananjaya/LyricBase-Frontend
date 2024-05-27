@@ -9,11 +9,13 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import { Text, View } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
-import { Text, View } from "@/components/Themed";
+
 import apiClient from "@/services/authService";
-import { useThemeColor } from "@/components/Themed";
+
 
 type SongDetailsRouteProp = RouteProp<RootStackParamList, "SongDetails">;
 

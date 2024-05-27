@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, FlatList, Pressable } from "react-native";
 import { Text, View } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
-import { useThemeColor } from "@/components/Themed";
+
 import apiClient from "@/services/authService";
 
 type ArtistsScreenNavigationProp = StackNavigationProp<
