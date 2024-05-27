@@ -13,6 +13,7 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
 import { Text, View } from "@/components/Themed";
 import apiClient from "@/services/authService";
+import { useThemeColor } from "@/components/Themed";
 
 type SongDetailsRouteProp = RouteProp<RootStackParamList, "SongDetails">;
 
@@ -130,7 +131,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 10,
-    backgroundColor: "#fcf",
   },
   title: {
     fontSize: 24,

@@ -1,3 +1,4 @@
+import EditPlaylistScreen from "@/app/EditPlaylist";
 
 
 const tintColorLight = "#5AB2FF";
@@ -12,6 +13,16 @@ export default {
     tabIconSelected: tintColorLight,
     button: "#CAF4FF",
     buttonPressed: "#5AB2FF",
+    playlistCardBackground: "#fcf",
+    playlistCardBackgroundPressed: "#5AB2FF",
+    deleteButton: "#FF5A5A",
+    deleteButtonPressed: "#FF0000",
+
+    savedPlaylistsHeader: "#5AB2FF",
+
+    savedPlaylistsContentColor: "#fbf",
+    savedPlaylistsContainerBackground: "#5AB2FF",
+    editPlaylistSelectedSongCard: "#5AB2FF",
   },
   dark: {
     text: "#fff",
@@ -21,5 +32,14 @@ export default {
     tabIconSelected: tintColorDark,
     button: "#512B81",
     buttonPressed: "#35155D",
+    playlistCardBackground: "#333",
+    playlistCardBackgroundPressed: "#5AB2FF",
+    deleteButton: "#FF5A5A",
+    deleteButtonPressed: "#FF0000",
+
+    savedPlaylistsHeader: "#5AC2FF",
+    savedPlaylistsContentColor: "#383",
+    savedPlaylistsContainerBackground: "#5AC2FF",
+    editPlaylistSelectedSongCard: "#5AC2FF",
   },
 };

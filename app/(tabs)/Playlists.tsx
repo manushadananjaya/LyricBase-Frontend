@@ -7,14 +7,14 @@ import {
   Alert,
   Animated,
   PanResponder,
-  View,
   Easing,
 } from "react-native";
-import { Text } from "@/components/Themed";
+import { Text, View } from "@/components/Themed";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@/components/types";
 import apiClient from "@/services/authService";
 import { useAuthContext } from "@/hooks/useAuthContext";
+import { useThemeColor } from "@/components/Themed";
 
 type PlaylistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -35,6 +35,15 @@ export default function Playlists() {
   const [loadingSaved, setLoadingSaved] = useState(true);
   const navigation = useNavigation<PlaylistsScreenNavigationProp>();
   const { user } = useAuthContext();
+
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const savedPlaylistsHeader = useThemeColor({}, "savedPlaylistsHeader");
+  const savedPlaylistsContentColor = useThemeColor({}, "savedPlaylistsContentColor");
+  const savedPlaylistsContainerBackground = useThemeColor({}, "savedPlaylistsContainerBackground");
+  
+ 
+  
 
   const fetchPlaylists = useCallback(() => {
     setLoading(true);
@@ -148,7 +157,10 @@ export default function Playlists() {
     <View style={styles.container}>
       <Text style={styles.title}>Your Playlists</Text>
       <Pressable
-        style={styles.createButton}
+        style={({ pressed }) => [
+          styles.createButton,
+          { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+        ]}
         onPress={() => navigation.navigate("CreatePlaylist")}
       >
         <Text style={styles.createButtonText}>Create Playlist</Text>
@@ -179,15 +191,26 @@ export default function Playlists() {
           styles.savedPlaylistsContainer,
           {
             height: height,
+            backgroundColor: savedPlaylistsContainerBackground,
           },
         ]}
       >
         <View {...panResponder.panHandlers}>
-          <Pressable style={styles.savedPlaylistsHeader}>
+          <Pressable
+            style={() => [
+              styles.savedPlaylistsHeader,
+              { backgroundColor: savedPlaylistsHeader },
+            ]}
+          >
             <Text style={styles.savedPlaylistsHeaderText}>Saved Playlists</Text>
           </Pressable>
         </View>
-        <View style={styles.savedPlaylistsContent}>
+        <View
+          style={
+            (styles.savedPlaylistsContent,
+            { backgroundColor: savedPlaylistsContentColor })
+          }
+        >
           {loadingSaved ? (
             <ActivityIndicator size="large" color="#0000ff" />
           ) : savedPlaylists.length === 0 ? (
@@ -219,14 +242,43 @@ export default function Playlists() {
   );
 }
 
-const PlaylistItem = ({ item, onDelete, onPress }) => (
-  <Pressable style={styles.playlistCard} onPress={onPress}>
-    <Text style={styles.playlistTitle}>{item.title}</Text>
-    <Pressable onPress={onDelete}>
-      <Text style={styles.deleteButton}>Delete</Text>
+const PlaylistItem = ({ item, onDelete, onPress }) => {
+  
+  const playlistCardBackground = useThemeColor({}, "playlistCardBackground");
+  const playlistCardBackgroundPressed = useThemeColor({}, "playlistCardBackgroundPressed");
+  const deleteButtonColor = useThemeColor({}, "deleteButton");
+  const deleteButtonPressedColor = useThemeColor({}, "deleteButtonPressed");
+  
+
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        styles.playlistCard,
+        {
+          backgroundColor: pressed
+            ? playlistCardBackgroundPressed
+            : playlistCardBackground,
+        },
+      ]}
+      onPress={onPress}
+    >
+      <Text style={styles.playlistTitle}>{item.title}</Text>
+      <Pressable
+        style={({ pressed }) => [
+          styles.deleteButton,
+          {
+            backgroundColor: pressed
+              ? deleteButtonPressedColor
+              : deleteButtonColor,
+          },
+        ]}
+        onPress={onDelete}
+      >
+        <Text style={styles.deleteButtonText}>Delete</Text>
+      </Pressable>
     </Pressable>
-  </Pressable>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -243,7 +295,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   createButton: {
-    backgroundColor: "#007BFF",
     padding: 10,
     borderRadius: 5,
     marginBottom: 20,
@@ -257,7 +308,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   playlistCard: {
-    backgroundColor: "#fff",
+   
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,
@@ -279,13 +330,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   deleteButton: {
-    color: "red",
-    fontWeight: "bold",
     borderRadius: 10,
     padding: 5,
-    backgroundColor: "#f0f0f0",
+  },
+  deleteButtonText: {
+    
+    fontWeight: "bold",
   },
   savedPlaylistsContainer: {
+    
     width: "100%",
     position: "absolute",
     bottom: 0,
@@ -306,6 +359,7 @@ const styles = StyleSheet.create({
   savedPlaylistsHeader: {
     alignItems: "center",
     paddingVertical: 20,
+    // backgroundColor: "#f7f7f7",
   },
   savedPlaylistsHeaderText: {
     fontSize: 20,
@@ -313,6 +367,7 @@ const styles = StyleSheet.create({
   },
   savedPlaylistsContent: {
     flex: 1,
+    // backgroundColor: "#f7f7f7",
   },
   listContentSongs: {
     paddingBottom: 20,

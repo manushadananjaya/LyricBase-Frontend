@@ -3,10 +3,15 @@ import { Platform, StyleSheet, Pressable } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useLogout } from "@/hooks/useLogout";
 import { useAuthContext } from "@/hooks/useAuthContext";
+import { useThemeColor } from "@/components/Themed";
+
 
 export default function ProfileScreen() {
   const { handleLogout } = useLogout();
   const { user, loading } = useAuthContext();
+
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
   // console.log("User:", user);
 
@@ -40,7 +45,7 @@ export default function ProfileScreen() {
       <Pressable
         style={({ pressed }) => [
           {
-            backgroundColor: pressed ? "#FF4500" : "#FF6347",
+            backgroundColor: pressed ? buttonColor : buttonPressedColor,
           },
           styles.button,
         ]}
@@ -59,17 +64,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#f5f5f5",
+    
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#333",
+    
     marginBottom: 20,
   },
   greeting: {
     fontSize: 18,
-    color: "#555",
+    
   },
   mail: {
     marginTop: 10,
@@ -85,7 +90,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#fff",
+    
     fontSize: 16,
     fontWeight: "bold",
   },

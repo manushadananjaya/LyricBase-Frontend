@@ -4,14 +4,14 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
-  View,
-  TextInput,
-  Text,
+  
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
+import { useThemeColor } from "@/components/Themed";
+import { Text, View, TextInput } from "@/components/Themed";
 
 type EditPlaylistScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -39,6 +39,9 @@ export default function EditPlaylistScreen() {
   const [loading, setLoading] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const navigation = useNavigation<EditPlaylistScreenNavigationProp>();
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const selectedSongCardColor = useThemeColor({}, "editPlaylistSelectedSongCard");
 
   useEffect(() => {
     apiClient
@@ -92,7 +95,7 @@ export default function EditPlaylistScreen() {
     <Pressable
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: pressed ? "#ddd" : "#fff" },
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
       ]}
       onPress={() => handleSelectSong(item)}
     >
@@ -107,7 +110,15 @@ export default function EditPlaylistScreen() {
   );
 
   const renderSelectedSong = ({ item }: { item: Song }) => (
-    <View style={styles.selectedCard}>
+    <View
+      style={[
+        styles.selectedCard,
+        {
+          
+          backgroundColor: selectedSongCardColor,
+        },
+      ]}
+    >
       <Text style={styles.selectedTitle}>
         {item.title}
         <Text style={styles.selectedArtist}> {item.artist}</Text>
@@ -119,7 +130,13 @@ export default function EditPlaylistScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.titleMain}>Edit Playlist</Text>
-        <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.saveButton,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          ]}
+          onPress={handleSavePlaylist}
+        >
           <Text style={styles.saveButtonText}>
             {isEditable ? "Save" : "Save as New Playlist"}
           </Text>
@@ -172,7 +189,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 50,
     paddingHorizontal: 20,
-    backgroundColor: "#f7f7f7",
+    // backgroundColor: "#f7f7f7",
   },
   header: {
     width: "100%",
@@ -192,15 +209,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     fontSize: 16,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   saveButton: {
-    backgroundColor: "#007BFF",
+    // backgroundColor: "#007BFF",
     padding: 10,
     borderRadius: 5,
   },
   saveButtonText: {
-    color: "#fff",
+    // color: "#fff",
     fontSize: 16,
   },
   selectedSongsContainer: {
@@ -220,7 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 20,
     fontSize: 16,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   listContent: {
     flexGrow: 1,
@@ -231,7 +248,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   card: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,
