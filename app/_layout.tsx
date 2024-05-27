@@ -43,15 +43,30 @@ function RootLayoutNav() {
     <Stack>
       <Stack.Screen name="+not-found" />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="Index" />
       <Stack.Screen name="Profile" options={{ presentation: "modal" }} />
-      <Stack.Screen name="SongDetails" />
-      <Stack.Screen name="ArtistDetails" />
-      <Stack.Screen name="CreatePlaylist" />
-      <Stack.Screen name="EditPlaylist" />
-      <Stack.Screen name="SelectedSongScreen" />
-      <Stack.Screen name="PlaylistDetails" />
+      <Stack.Screen name="SongDetails" options={{ headerBackTitle: "Back" }} />
+      <Stack.Screen
+        name="ArtistDetails"
+        options={{ headerBackTitle: "Back" }}
+      />
+      <Stack.Screen
+        name="CreatePlaylist"
+        options={{ headerBackTitle: "Back" }}
+      />
+      <Stack.Screen
+        name="EditPlaylist"
+        options={{ headerBackTitle: "Selected Songs" }}
+      />
+      <Stack.Screen
+        name="SelectedSongScreen"
+        options={{ title: "Selected Songs", headerBackTitle: "Back" }}
+      />
+      <Stack.Screen
+        name="PlaylistDetails"
+        options={{ headerBackTitle: "Back" }}
+      />
     </Stack>
   );
 }
