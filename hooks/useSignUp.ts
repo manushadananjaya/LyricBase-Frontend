@@ -3,6 +3,8 @@ import axios from "axios";
 import { Alert } from "react-native";
 import { useAuthContext } from "./useAuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BASE_URL } from "@/services/authService"; 
+
 
 interface SignUpResponse {
   success: boolean;
@@ -37,9 +39,17 @@ const useSignUp = () => {
       return { success: false, message };
     }
     
+    // check if password is at least 8 characters
+    if (password.length < 8) {
+      const message = "Password must be at least 8 characters long";
+      setError(message);
+      setLoading(false);
+      return { success: false, message };
+    }
+
 
     try {
-      const response = await axios.post("http://localhost:3000/auth/signup", {
+      const response = await axios.post(`${BASE_URL}/auth/signup`, {
         name,
         email,
         password,
@@ -49,7 +59,7 @@ const useSignUp = () => {
         await AsyncStorage.setItem("user", JSON.stringify(response.data));
         dispatch({ type: "LOGIN", payload: response.data });
 
-        Alert.alert("Signup successful");
+        // Alert.alert("Signup successful");
         return { success: true };
       } else {
         const message = "Signup failed";

@@ -4,15 +4,15 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
-  View,
-  TextInput,
-  Text,
+  
 } from "react-native";
-import axios from "axios";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import { Text, View, TextInput } from "@/components/Themed";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
+
 
 type EditPlaylistScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -28,17 +28,21 @@ interface Song {
 
 interface RouteParams {
   playlistId: string;
+  isEditable: boolean;
 }
 
 export default function EditPlaylistScreen() {
   const route = useRoute();
-  const { playlistId } = route.params as RouteParams;
+  const { playlistId, isEditable } = route.params as RouteParams;
   const [searchQuery, setSearchQuery] = useState("");
   const [songs, setSongs] = useState<Song[]>([]);
   const [selectedSongs, setSelectedSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const navigation = useNavigation<EditPlaylistScreenNavigationProp>();
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const selectedSongCardColor = useThemeColor({}, "editPlaylistSelectedSongCard");
 
   useEffect(() => {
     apiClient
@@ -54,8 +58,8 @@ export default function EditPlaylistScreen() {
     if (searchQuery.trim().length > 0) {
       setLoading(true);
       apiClient
-        .get<Song[]>(`/songs`, {
-          params: { search: searchQuery },
+        .get<Song[]>(`/songs/song`, {
+          params: { search: searchQuery, filter: "name" },
         })
         .then((response) => setSongs(response.data))
         .catch((error) => console.error(error))
@@ -71,8 +75,11 @@ export default function EditPlaylistScreen() {
       songs: selectedSongs.map((song) => song._id),
     };
 
-    apiClient
-      .put(`/playlists/${playlistId}`, playlistData)
+    const request = isEditable
+      ? apiClient.put(`/playlists/${playlistId}`, playlistData)
+      : apiClient.post(`/playlists`, playlistData);
+
+    request
       .then(() => navigation.navigate("Playlists"))
       .catch((error) => console.error(error));
   };
@@ -89,7 +96,7 @@ export default function EditPlaylistScreen() {
     <Pressable
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: pressed ? "#ddd" : "#fff" },
+        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
       ]}
       onPress={() => handleSelectSong(item)}
     >
@@ -104,7 +111,15 @@ export default function EditPlaylistScreen() {
   );
 
   const renderSelectedSong = ({ item }: { item: Song }) => (
-    <View style={styles.selectedCard}>
+    <View
+      style={[
+        styles.selectedCard,
+        {
+          
+          backgroundColor: selectedSongCardColor,
+        },
+      ]}
+    >
       <Text style={styles.selectedTitle}>
         {item.title}
         <Text style={styles.selectedArtist}> {item.artist}</Text>
@@ -116,8 +131,16 @@ export default function EditPlaylistScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.titleMain}>Edit Playlist</Text>
-        <Pressable style={styles.saveButton} onPress={handleSavePlaylist}>
-          <Text style={styles.saveButtonText}>Save</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.saveButton,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          ]}
+          onPress={handleSavePlaylist}
+        >
+          <Text style={styles.saveButtonText}>
+            {isEditable ? "Save" : "Save as New Playlist"}
+          </Text>
         </Pressable>
       </View>
 
@@ -167,7 +190,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 50,
     paddingHorizontal: 20,
-    backgroundColor: "#f7f7f7",
+    // backgroundColor: "#f7f7f7",
   },
   header: {
     width: "100%",
@@ -187,15 +210,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     fontSize: 16,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   saveButton: {
-    backgroundColor: "#007BFF",
+    // backgroundColor: "#007BFF",
     padding: 10,
     borderRadius: 5,
   },
   saveButtonText: {
-    color: "#fff",
+    // color: "#fff",
     fontSize: 16,
   },
   selectedSongsContainer: {
@@ -215,7 +238,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 20,
     fontSize: 16,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   listContent: {
     flexGrow: 1,
@@ -226,7 +249,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   card: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,

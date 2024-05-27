@@ -1,13 +1,10 @@
-// Themed.tsx
-
 import React from "react";
 import {
   Text as DefaultText,
   View as DefaultView,
   TextInput as DefaultTextInput,
 } from "react-native";
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
+import { useThemeColor } from "@/hooks/useThemeColor"; // Adjust the path if needed
 
 type ThemeProps = {
   lightColor?: string;
@@ -17,20 +14,6 @@ type ThemeProps = {
 export type TextProps = ThemeProps & DefaultText["props"];
 export type ViewProps = ThemeProps & DefaultView["props"];
 export type TextInputProps = ThemeProps & DefaultTextInput["props"];
-
-export function useThemeColor(
-  props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
-) {
-  const theme = useColorScheme() ?? "light";
-  const colorFromProps = props[theme];
-
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
-  }
-}
 
 export function Text(props: TextProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
@@ -50,11 +33,19 @@ export function View(props: ViewProps) {
 }
 
 export function TextInput(props: TextInputProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
+  const { style, lightColor, darkColor, placeholderTextColor, ...otherProps } =
+    props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const placeholderColor = useThemeColor(
+    { light: placeholderTextColor as string, dark: placeholderTextColor as string },
+    "placeholder"
+  );
 
-  return <DefaultTextInput style={[{ color }, style]} {...otherProps} />;
+  return (
+    <DefaultTextInput
+      style={[{ color }, style]}
+      placeholderTextColor={placeholderColor}
+      {...otherProps}
+    />
+  );
 }
-
-
-

@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import {  StyleSheet, Pressable } from "react-native";
 import useSignUp from "@/hooks/useSignUp";
 import { router } from "expo-router";
-import { useThemeColor, View, Text, TextInput } from "@/components/Themed";
+import {  View, Text, TextInput } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const SignUp: React.FC = () => {
   const {
@@ -37,7 +38,7 @@ const SignUp: React.FC = () => {
     clearError();
     const response = await handleSignUp();
     if (response.success) {
-      router.push("/sign-in");
+      router.replace("/(tabs)/Home");
     }
   };
 

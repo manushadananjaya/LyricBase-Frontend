@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
-import { useThemeColor } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
@@ -215,6 +215,7 @@ export default function Search() {
           }
           keyExtractor={(item) => item._id} // Ensure unique keys
           contentContainerStyle={styles.listContent}
+          style={{ maxHeight: 450 }}
         />
       )}
     </View>
@@ -271,11 +272,18 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   card: {
-    padding: 10,
-    borderRadius: 5,
-    borderWidth: 1,
-    marginBottom: 10,
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 10,
     width: "100%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    elevation: 4,
   },
   title: {
     fontSize: 18,

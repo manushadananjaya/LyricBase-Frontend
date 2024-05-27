@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Pressable } from "react-native";
 import useLogin from "@/hooks/useLogin";
 import { Stack, router } from "expo-router";
-import { useThemeColor } from "@/components/Themed";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { Text, View, TextInput } from "@/components/Themed";
 
 const SignIn: React.FC = () => {
@@ -82,6 +82,17 @@ const SignIn: React.FC = () => {
         >
           <Text style={styles.buttonText}>Sign Up</Text>
         </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.forgotButton,
+            { backgroundColor: pressed ? "transparent" : "transparent" },
+          ]}
+          onPress={() => {
+            router.push("/(auth)/forgot-password");
+          }}
+        >
+          <Text style={styles.forgotButtonText}>Forgot Password?</Text>
+        </Pressable>
       </View>
     </>
   );
@@ -119,6 +130,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  forgotButton: {
+    marginTop: 10,
+  },
+  forgotButtonText: {
+    color: "blue",
+    fontSize: 14,
   },
   error: {
     color: "red",
