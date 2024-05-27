@@ -4,16 +4,15 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
-// Get user from context
 import { useAuthContext } from "@/hooks/useAuthContext";
 import apiClient from "@/services/authService";
-
 
 type CreatePlaylistScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -46,7 +45,7 @@ export default function CreatePlaylistScreen() {
       setLoading(true);
       apiClient
         .get<Song[]>(`/songs/song`, {
-          params: { search: searchQuery, filter : "name" },
+          params: { search: searchQuery, filter: "name" },
         })
         .then((response) => setSongs(response.data))
         .catch((error) => console.error(error))
@@ -57,6 +56,16 @@ export default function CreatePlaylistScreen() {
   }, [searchQuery]);
 
   const handleSavePlaylist = () => {
+    if (playlistName.trim() === "") {
+      Alert.alert("Error", "Playlist name cannot be empty.");
+      return;
+    }
+
+    if (selectedSongs.length === 0) {
+      Alert.alert("Error", "You must select at least one song.");
+      return;
+    }
+
     const playlistData = {
       title: playlistName,
       songs: selectedSongs,
