@@ -36,6 +36,7 @@ export default function Playlists() {
   const [loadingSaved, setLoadingSaved] = useState(true);
   const navigation = useNavigation<PlaylistsScreenNavigationProp>();
   const { user } = useAuthContext();
+  const listRef = useRef<FlatList>(null);
 
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
@@ -170,7 +171,9 @@ export default function Playlists() {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <FlatList
+          ref={listRef}
           data={playlists}
+          // initialNumToRender={5}
           renderItem={({ item }) => (
             <PlaylistItem
               item={item}
@@ -185,6 +188,7 @@ export default function Playlists() {
           )}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
+          style={{ maxHeight: 450 }}
         />
       )}
       <Animated.View
@@ -235,6 +239,7 @@ export default function Playlists() {
               )}
               keyExtractor={(item) => item._id}
               contentContainerStyle={styles.listContentSongs}
+              style={{ maxHeight: "90%" }}
             />
           )}
         </View>
@@ -307,9 +312,11 @@ const styles = StyleSheet.create({
   listContent: {
     flexGrow: 1,
     width: "100%",
+    paddingBottom: 150,
+    marginBottom: 200,
+    position: "relative",
   },
   playlistCard: {
-   
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,
@@ -335,11 +342,10 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   deleteButtonText: {
-    
     fontWeight: "bold",
   },
   savedPlaylistsContainer: {
-    
+    flexGrow: 1,
     width: "100%",
     position: "absolute",
     bottom: 0,
@@ -360,7 +366,6 @@ const styles = StyleSheet.create({
   savedPlaylistsHeader: {
     alignItems: "center",
     paddingVertical: 20,
-    // backgroundColor: "#f7f7f7",
   },
   savedPlaylistsHeaderText: {
     fontSize: 20,
@@ -368,7 +373,6 @@ const styles = StyleSheet.create({
   },
   savedPlaylistsContent: {
     flex: 1,
-    // backgroundColor: "#f7f7f7",
   },
   listContentSongs: {
     paddingBottom: 20,
@@ -380,5 +384,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+
 
 export { Playlists };

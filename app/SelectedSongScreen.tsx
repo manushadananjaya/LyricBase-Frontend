@@ -83,6 +83,7 @@ export default function SelectedSongsScreen() {
           renderItem={renderSelectedSong}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.selectedListContent}
+          style={{ maxHeight: "90%" }}
         />
       </View>
     </View>

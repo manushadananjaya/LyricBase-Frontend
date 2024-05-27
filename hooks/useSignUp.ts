@@ -39,6 +39,14 @@ const useSignUp = () => {
       return { success: false, message };
     }
     
+    // check if password is at least 8 characters
+    if (password.length < 8) {
+      const message = "Password must be at least 8 characters long";
+      setError(message);
+      setLoading(false);
+      return { success: false, message };
+    }
+
 
     try {
       const response = await axios.post(`${BASE_URL}/auth/signup`, {
@@ -51,7 +59,7 @@ const useSignUp = () => {
         await AsyncStorage.setItem("user", JSON.stringify(response.data));
         dispatch({ type: "LOGIN", payload: response.data });
 
-        Alert.alert("Signup successful");
+        // Alert.alert("Signup successful");
         return { success: true };
       } else {
         const message = "Signup failed";

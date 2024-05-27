@@ -114,6 +114,7 @@ export default function CreatePlaylistScreen() {
         placeholder="Playlist Name"
         value={playlistName}
         onChangeText={setPlaylistName}
+        maxLength={20}
       />
       <TextInput
         style={styles.searchBar}
@@ -129,6 +130,7 @@ export default function CreatePlaylistScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
+          style={{ maxHeight: 470 }}
         />
       )}
     </View>

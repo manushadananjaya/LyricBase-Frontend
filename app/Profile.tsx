@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   Platform,
@@ -6,13 +6,15 @@ import {
   Pressable,
   ScrollView,
   Dimensions,
+  
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { Text, View } from "@/components/Themed";
+import { Text, View ,TextInput} from "@/components/Themed";
 import { useTheme } from "@/context/themeContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useLogout } from "@/hooks/useLogout";
 import { useAuthContext } from "@/hooks/useAuthContext";
+import apiClient from "@/services/authService";
 
 const { width } = Dimensions.get("window");
 
@@ -21,8 +23,49 @@ function ProfileScreen() {
   const { user, loading } = useAuthContext();
   const { theme, setTheme } = useTheme();
 
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [error, setError] = useState("");
+
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
+
+  const handleChangePassword = () => {
+    if (newPassword !== confirmNewPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    //check if the password is empty if empty send an error
+    if (newPassword === "") {
+      setError("Password cannot be empty");
+      return;
+    }
+
+    //set password length to be greater than 8
+    if (newPassword.length < 8) {
+      setError("Password must be at least 8 characters long");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      return;
+    }
+
+
+    apiClient
+      .put("/auth/changePassword", {
+        newPassword: newPassword,
+      })
+      .then(() => {
+        alert("Password changed successfully");
+        setNewPassword("");
+        setConfirmNewPassword("");
+        setError("");
+      })
+      .catch((error) => {
+        setError(error.response.data.message);
+      });
+ 
+  };
 
   if (loading) {
     return (
@@ -71,6 +114,36 @@ function ProfileScreen() {
             </View>
           </View>
 
+          <View style={styles.settingsSection}>
+            <Text style={styles.settingsTitle}>Change Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="New Password"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm New Password"
+              secureTextEntry
+              value={confirmNewPassword}
+              onChangeText={setConfirmNewPassword}
+            />
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            <Pressable
+              style={({ pressed }) => [
+                {
+                  backgroundColor: pressed ? buttonPressedColor : buttonColor,
+                },
+                styles.button,
+              ]}
+              onPress={handleChangePassword}
+            >
+              <Text style={styles.buttonText}>Change Password</Text>
+            </Pressable>
+          </View>
+
           <Pressable
             style={({ pressed }) => [
               {
@@ -95,7 +168,6 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
-    // backgroundColor: "#f0f0f0",
   },
   scrollContainer: {
     flexGrow: 1,
@@ -104,14 +176,13 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   profileContainer: {
-    width: width > 600 ? "60%" : "90%", // Adjust the width based on screen size
+    width: width > 600 ? "60%" : "90%",
     maxWidth: 410,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
     paddingVertical: 40,
     borderRadius: 10,
-    // backgroundColor: "#fff",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -125,12 +196,10 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     marginBottom: 20,
-    // color: "#333",
   },
   greeting: {
     fontSize: 24,
     marginBottom: 5,
-    // color: "#666",
   },
   mail: {
     fontSize: 18,
@@ -147,7 +216,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 20,
-    // color: "#444",
   },
   pickerRow: {
     flexDirection: "row",
@@ -155,14 +223,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     marginBottom: 20,
-    
-    
   },
   settingsLabel: {
     fontSize: 17,
     marginBottom: 10,
     color: "#555",
-
   },
   pickerContainer: {
     height: 50,
@@ -177,6 +242,15 @@ const styles = StyleSheet.create({
   picker: {
     width: "100%",
   },
+  input: {
+    width: "100%",
+    height: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
   button: {
     paddingVertical: 12,
     paddingHorizontal: 25,
@@ -184,7 +258,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    // backgroundColor: "#007AFF",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -197,7 +270,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontWeight: "bold",
-    // color: "#fff",
   },
   separator: {
     marginVertical: 30,

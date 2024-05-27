@@ -215,6 +215,7 @@ export default function Search() {
           }
           keyExtractor={(item) => item._id} // Ensure unique keys
           contentContainerStyle={styles.listContent}
+          style={{ maxHeight: 450 }}
         />
       )}
     </View>
