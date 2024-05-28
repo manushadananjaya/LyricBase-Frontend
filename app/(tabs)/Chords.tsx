@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList, Pressable } from "react-native";
+import { StyleSheet, FlatList, Pressable ,Image} from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
+import { Stack } from "expo-router";
 
 import apiClient from "@/services/authService";
 
@@ -16,8 +16,8 @@ type ChordsScreenNavigationProp = StackNavigationProp<
 
 export default function Chords() {
 
-  const buttonColor = useThemeColor({}, "button");
-  const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const buttonColor = useThemeColor({}, "buttonColorItems");
+  const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
  
   const navigation = useNavigation<ChordsScreenNavigationProp>();
   const [songs, setSongs] = useState<
@@ -54,28 +54,44 @@ export default function Chords() {
   );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={songs}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        contentContainerStyle={styles.listContent}
-      />
-    </View>
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+
+
+      <View style={styles.container}>
+        <Image source={require('../../assets/images/guitar3.jpg')} style={styles.mainImage}/>
+        <Text style={styles.titleMain}>Songs</Text>
+        <FlatList
+          data={songs}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          contentContainerStyle={styles.listContent}
+        />
+      </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%", 
+    width: "100%",
   },
   listContent: {
     paddingHorizontal: 20,
-    paddingBottom: 10, 
+    paddingBottom: 10,
+  },
+  titleMain: {
+    fontSize: 30,
+    fontFamily: "Montserrat-Bold",
+    fontWeight: "bold",
+    marginBottom: 20,
+    marginTop: "20%",
+    left: "5%",
+    color: "white",
+
   },
   card: {
-    
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,
@@ -95,9 +111,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+    
   },
   artist: {
     fontSize: 16,
     color: "#888",
   },
+  mainImage:{
+    position: "absolute",
+    width: "200%",
+    height: "180%",
+    top: 0,
+    left: -30,
+    opacity: 0.7,
+  }
 });

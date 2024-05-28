@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList, Pressable } from "react-native";
+import { StyleSheet, FlatList, Pressable,Image } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
+import { Stack } from "expo-router";
 
 import apiClient from "@/services/authService";
 
@@ -21,8 +22,8 @@ interface Artist {
 }
 
 export default function Artists() {
-    const buttonColor = useThemeColor({}, "button");
-    const buttonPressedColor = useThemeColor({}, "buttonPressed");
+   const buttonColor = useThemeColor({}, "buttonColorItems");
+   const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
   const navigation = useNavigation<ArtistsScreenNavigationProp>();
   const [artists, setArtists] = useState<Artist[]>([]);
 
@@ -50,14 +51,19 @@ export default function Artists() {
   );
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={artists}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-        contentContainerStyle={styles.listContent}
-      />
-    </View>
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.container}>
+        <Image source={require("../../assets/images/artists.jpg")} style={styles.mainImage}/>
+        <Text style={styles.titleMain}>Artists</Text>
+        <FlatList
+          data={artists}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          contentContainerStyle={styles.listContent}
+        />
+      </View>
+    </>
   );
 }
 
@@ -91,5 +97,22 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  titleMain: {
+    fontSize: 30,
+    fontFamily: "Montserrat-Bold",
+    fontWeight: "bold",
+    marginBottom: 20,
+    marginTop: "20%",
+    left: "5%",
+    color: "white",
+  },
+  mainImage: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    top: 0,
+    
+    opacity: 0.8,
   },
 });

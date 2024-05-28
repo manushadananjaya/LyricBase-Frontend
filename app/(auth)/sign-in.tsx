@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Pressable,
+  ImageBackground,
+  TouchableOpacity,
+  Text,
+  View,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
 import useLogin from "@/hooks/useLogin";
 import { Stack, router } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import { Text, View, TextInput } from "@/components/Themed";
 
 const SignIn: React.FC = () => {
   const {
@@ -19,7 +27,7 @@ const SignIn: React.FC = () => {
   const [clearErrorTimeout, setClearErrorTimeout] =
     useState<NodeJS.Timeout | null>(null);
 
-  const buttonColor = useThemeColor({}, "button");
+  const buttonColor = "#6200ee";
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
   useEffect(() => {
@@ -43,70 +51,100 @@ const SignIn: React.FC = () => {
   return (
     <>
       <Stack.Screen options={{ headerLeft: () => null }} />
-      <View style={styles.container}>
-        <Text style={styles.title}>Sign In</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
-          ]}
-          onPress={signInAndNavigate}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>Sign In</Text>
-        </Pressable>
-        {error && <Text style={styles.error}>{error}</Text>}
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
-          ]}
-          onPress={() => {
-            router.push("/(auth)/sign-up");
-          }}
-        >
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.forgotButton,
-            { backgroundColor: pressed ? "transparent" : "transparent" },
-          ]}
-          onPress={() => {
-            router.push("/(auth)/forgot-password");
-          }}
-        >
-          <Text style={styles.forgotButtonText}>Forgot Password?</Text>
-        </Pressable>
-      </View>
+      <Stack.Screen options={{ headerShown: false }} />
+
+      <ImageBackground
+        source={require("../../assets/images/guitar2.jpg")}
+        style={styles.background}
+      >
+        <Text style={styles.welcomeTitle}>Welcome Back!</Text>
+        <View style={styles.bottomPanel}>
+          <Text style={styles.title}>Sign In</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholderTextColor={"#000"}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            placeholderTextColor={"#000"}
+          />
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+            ]}
+            onPress={signInAndNavigate}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Sign In</Text>
+            )}
+          </Pressable>
+          {error && <Text style={styles.error}>{error}</Text>}
+          <TouchableOpacity
+            style={[styles.forgotButton, { display: error ? "none" : "flex" }]} // Hide the forgot password link if there is an error
+            onPress={() => {
+              router.push("/(auth)/forgot-password");
+            }}
+          >
+            <Text style={styles.forgotButtonText}>Forgot Password?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.signupLink}
+            onPress={() => router.push("/(auth)/sign-up")}
+          >
+            <Text style={styles.signupText}>
+              Don't have an account? Register
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+  },
+  welcomeTitle: {
+    fontSize: 42,
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
+    position: "absolute",
+    top: "30%",
+  },
+  bottomPanel: {
+    width: "100%",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 60,
+    position: "absolute",
+    bottom: 0,
   },
   title: {
-    fontSize: 24,
+    fontSize: 30,
+    fontFamily: "Montserrat-Bold",
     fontWeight: "bold",
     marginBottom: 20,
   },
@@ -118,6 +156,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
     borderRadius: 5,
+    fontFamily: "Montserrat-Regular",
+    
   },
   button: {
     paddingVertical: 10,
@@ -130,17 +170,28 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
+    fontFamily: "Montserrat-Regular",
   },
   forgotButton: {
-    marginTop: 10,
+    marginTop: 5,
   },
   forgotButtonText: {
     color: "blue",
     fontSize: 14,
+    fontFamily: "Montserrat-Regular",
   },
   error: {
     color: "red",
     marginBottom: 10,
+  },
+  signupText: {
+    color: "#6200ee",
+    fontSize: 16,
+    // marginTop: 10,
+    fontFamily: "Montserrat-Regular",
+  },
+  signupLink: {
+    marginTop: 15,
   },
 });
 

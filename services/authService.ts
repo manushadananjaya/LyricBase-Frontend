@@ -1,7 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+} from "axios";
 
-export const BASE_URL = "https://0e85-2402-d000-8128-2d61-f5ee-3c8f-c6da-dbc0.ngrok-free.app";
+export const BASE_URL =
+  "https://8950-2402-d000-8128-2d61-f5ee-3c8f-c6da-dbc0.ngrok-free.app";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -10,13 +15,18 @@ const apiClient = axios.create({
 let isRefreshing = false;
 let refreshTokenPromise: Promise<any> | null = null;
 
+// Extend AxiosRequestConfig to include the _retry property
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  _retry?: boolean;
+}
+
 apiClient.interceptors.request.use(
   async (config) => {
     const token = await getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    return config;
+    return config as InternalAxiosRequestConfig;
   },
   (error) => Promise.reject(error)
 );
@@ -24,7 +34,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as CustomAxiosRequestConfig;
 
     if (
       error.response &&
@@ -46,8 +56,10 @@ apiClient.interceptors.response.use(
           const newToken = await refreshTokenPromise;
           isRefreshing = false;
           setAccessToken(newToken.accessToken);
-          originalRequest.headers.Authorization = `Bearer ${newToken.accessToken}`;
-          return axios(originalRequest as AxiosRequestConfig);
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${newToken.accessToken}`;
+          }
+          return axios(originalRequest as InternalAxiosRequestConfig);
         } catch (refreshError) {
           isRefreshing = false;
           return Promise.reject(refreshError);

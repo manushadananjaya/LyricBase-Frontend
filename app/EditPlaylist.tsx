@@ -4,7 +4,7 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
-  
+  Alert,
 } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Text, View, TextInput } from "@/components/Themed";
@@ -12,7 +12,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
-
 
 type EditPlaylistScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -40,9 +39,15 @@ export default function EditPlaylistScreen() {
   const [loading, setLoading] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const navigation = useNavigation<EditPlaylistScreenNavigationProp>();
-  const buttonColor = useThemeColor({}, "button");
-  const buttonPressedColor = useThemeColor({}, "buttonPressed");
-  const selectedSongCardColor = useThemeColor({}, "editPlaylistSelectedSongCard");
+  const buttonColorsave = useThemeColor({}, "button");
+  const buttonPressedColorSave = useThemeColor({}, "buttonPressed");
+  const selectedSongCardColor = useThemeColor(
+    {},
+    "editPlaylistSelectedSongCard"
+  );
+
+  const buttonColor = useThemeColor({}, "buttonColorItems");
+  const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
 
   useEffect(() => {
     apiClient
@@ -70,6 +75,15 @@ export default function EditPlaylistScreen() {
   }, [searchQuery]);
 
   const handleSavePlaylist = () => {
+    if (playlistName.trim() === "") {
+      Alert.alert("Error", "Playlist name cannot be empty.");
+      return;
+    }
+
+    if (selectedSongs.length === 0) {
+      Alert.alert("Error", "You must select at least one song.");
+      return;
+    }
     const playlistData = {
       title: playlistName,
       songs: selectedSongs.map((song) => song._id),
@@ -92,6 +106,10 @@ export default function EditPlaylistScreen() {
     );
   };
 
+  const handleRemoveSelectedSong = (song: Song) => {
+    setSelectedSongs((prev) => prev.filter((s) => s._id !== song._id));
+  };
+
   const renderItem = ({ item }: { item: Song }) => (
     <Pressable
       style={({ pressed }) => [
@@ -111,20 +129,20 @@ export default function EditPlaylistScreen() {
   );
 
   const renderSelectedSong = ({ item }: { item: Song }) => (
-    <View
+    <Pressable
       style={[
         styles.selectedCard,
         {
-          
           backgroundColor: selectedSongCardColor,
         },
       ]}
+      onPress={() => handleRemoveSelectedSong(item)}
     >
       <Text style={styles.selectedTitle}>
         {item.title}
         <Text style={styles.selectedArtist}> {item.artist}</Text>
       </Text>
-    </View>
+    </Pressable>
   );
 
   return (
@@ -134,7 +152,11 @@ export default function EditPlaylistScreen() {
         <Pressable
           style={({ pressed }) => [
             styles.saveButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+            {
+              backgroundColor: pressed
+                ? buttonPressedColorSave
+                : buttonColorsave,
+            },
           ]}
           onPress={handleSavePlaylist}
         >
@@ -179,6 +201,9 @@ export default function EditPlaylistScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.selectedListContent}
         />
+        <Text style={styles.removeHint}>
+          You can remove selected songs by tapping on it
+        </Text>
       </View>
     </View>
   );
@@ -190,7 +215,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 50,
     paddingHorizontal: 20,
-    // backgroundColor: "#f7f7f7",
   },
   header: {
     width: "100%",
@@ -210,16 +234,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     fontSize: 16,
-    // backgroundColor: "#fff",
   },
   saveButton: {
-    // backgroundColor: "#007BFF",
     padding: 10,
     borderRadius: 5,
   },
   saveButtonText: {
-    // color: "#fff",
     fontSize: 16,
+    color: "#fff",
   },
   selectedSongsContainer: {
     width: "100%",
@@ -238,7 +260,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 20,
     fontSize: 16,
-    // backgroundColor: "#fff",
   },
   listContent: {
     flexGrow: 1,
@@ -249,7 +270,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   card: {
-    // backgroundColor: "#fff",
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,
@@ -267,7 +287,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedCard: {
-    backgroundColor: "#f0f0f0",
     padding: 10,
     marginVertical: 5,
     marginRight: 10,
@@ -296,6 +315,11 @@ const styles = StyleSheet.create({
   selectedArtist: {
     fontSize: 12,
     color: "#888",
+  },
+  removeHint: {
+    fontSize: 12,
+    color: "#888",
+    marginBottom: 20,
   },
   added: {
     color: "green",

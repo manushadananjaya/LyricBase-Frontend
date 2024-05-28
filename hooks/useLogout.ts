@@ -17,7 +17,7 @@ const useLogout = () => {
       navigation.reset({
         index: 0,
         routes: [
-          { name: "(auth)" } as PartialRoute<Route<never, object | undefined>>,
+          { name: "WelcomeScreen" } as PartialRoute<Route<never, object | undefined>>,
         ],
       });
     } catch (error) {

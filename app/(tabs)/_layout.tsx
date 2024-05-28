@@ -7,6 +7,7 @@ import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 
+
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -22,6 +23,21 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarInactiveTintColor: Colors[colorScheme ?? "light"].tabIconDefault,
+        tabBarStyle: {
+          height: 90,
+          borderTopWidth: 0,
+          paddingVertical: 5,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: "600",
+          marginBottom: 4,
+        },
+        tabBarIconStyle: {
+          marginTop: 5,
+          
+        },
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
@@ -51,7 +67,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Chords"
         options={{
-          title: "Chords",
+          title: "Songs",
           tabBarIcon: ({ color }) => <TabBarIcon name="music" color={color} />,
         }}
       />

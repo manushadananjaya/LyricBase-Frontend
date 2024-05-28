@@ -14,7 +14,7 @@ const AuthLoadingScreen = () => {
       if (user) {
         router.replace("/Home"); // Navigate to home screen if signed in
       } else {
-        router.replace("/sign-in"); // Navigate to sign-in screen if not signed in
+        router.replace("/WelcomeScreen"); // Navigate to sign-in screen if not signed in
       }
     }
   }, [loading, user]);

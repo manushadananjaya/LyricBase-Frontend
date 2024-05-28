@@ -21,8 +21,8 @@ interface Song {
 
 export default function ArtistDetails() {
 
-    const buttonColor = useThemeColor({}, "button");
-    const buttonPressedColor = useThemeColor({}, "buttonPressed");  
+    const buttonColor = useThemeColor({}, "buttonColorItems");
+    const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");  
   const route = useRoute<ArtistDetailsRouteProp>();
   const { artist } = route.params;
   const [artistSongs, setArtistSongs] = useState<Song[]>([]);
