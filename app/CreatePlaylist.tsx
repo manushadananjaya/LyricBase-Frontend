@@ -34,8 +34,13 @@ export default function CreatePlaylistScreen() {
   const [playlistName, setPlaylistName] = useState("");
   const navigation = useNavigation<CreatePlaylistScreenNavigationProp>();
 
-  const buttonColor = useThemeColor({}, "button");
-  const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const buttonColorSave = useThemeColor({}, "button");
+  const buttonPressedColorSave = useThemeColor({}, "buttonPressed");
+
+  const buttonColor = useThemeColor({}, "buttonColorItems");
+  const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
+
+  
 
   // Get user from context
   // const { user } = useAuthContext();
@@ -90,7 +95,7 @@ export default function CreatePlaylistScreen() {
     <Pressable
       style={({ pressed }) => [
         styles.card,
-        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+        { backgroundColor: pressed ? buttonPressedColorSave : buttonColor },
       ]}
       onPress={() => handleSelectSong(item)}
     >
@@ -111,7 +116,7 @@ export default function CreatePlaylistScreen() {
         <Pressable
           style={({ pressed }) => [
             styles.saveButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+            { backgroundColor: pressed ? buttonPressedColor : buttonColorSave },
           ]}
           onPress={handleSavePlaylist}
         >

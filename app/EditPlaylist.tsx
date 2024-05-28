@@ -39,12 +39,15 @@ export default function EditPlaylistScreen() {
   const [loading, setLoading] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
   const navigation = useNavigation<EditPlaylistScreenNavigationProp>();
-  const buttonColor = useThemeColor({}, "button");
-  const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const buttonColorsave = useThemeColor({}, "button");
+  const buttonPressedColorSave = useThemeColor({}, "buttonPressed");
   const selectedSongCardColor = useThemeColor(
     {},
     "editPlaylistSelectedSongCard"
   );
+
+  const buttonColor = useThemeColor({}, "buttonColorItems");
+  const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
 
   useEffect(() => {
     apiClient
@@ -149,7 +152,11 @@ export default function EditPlaylistScreen() {
         <Pressable
           style={({ pressed }) => [
             styles.saveButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+            {
+              backgroundColor: pressed
+                ? buttonPressedColorSave
+                : buttonColorsave,
+            },
           ]}
           onPress={handleSavePlaylist}
         >
@@ -234,6 +241,7 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     fontSize: 16,
+    color: "#fff",
   },
   selectedSongsContainer: {
     width: "100%",

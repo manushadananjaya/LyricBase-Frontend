@@ -8,6 +8,7 @@ import {
   Animated,
   PanResponder,
   Easing,
+  Image,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -15,7 +16,8 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { StackNavigationProp } from "@/components/types";
 import apiClient from "@/services/authService";
 import { useAuthContext } from "@/hooks/useAuthContext";
-
+import { Stack } from "expo-router";
+import Icon from "react-native-vector-icons/Ionicons";
 
 type PlaylistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -41,11 +43,14 @@ export default function Playlists() {
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
   const savedPlaylistsHeader = useThemeColor({}, "savedPlaylistsHeader");
-  const savedPlaylistsContentColor = useThemeColor({}, "savedPlaylistsContentColor");
-  const savedPlaylistsContainerBackground = useThemeColor({}, "savedPlaylistsContainerBackground");
-  
- 
-  
+  const savedPlaylistsContentColor = useThemeColor(
+    {},
+    "savedPlaylistsContentColor"
+  );
+  const savedPlaylistsContainerBackground = useThemeColor(
+    {},
+    "savedPlaylistsContainerBackground"
+  );
 
   const fetchPlaylists = useCallback(() => {
     setLoading(true);
@@ -156,105 +161,134 @@ export default function Playlists() {
   ).current;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Your Playlists</Text>
-      <Pressable
-        style={({ pressed }) => [
-          styles.createButton,
-          { backgroundColor: pressed ? buttonPressedColor : buttonColor },
-        ]}
-        onPress={() => navigation.navigate("CreatePlaylist")}
-      >
-        <Text style={styles.createButtonText}>Create Playlist</Text>
-      </Pressable>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <FlatList
-          ref={listRef}
-          data={playlists}
-          // initialNumToRender={5}
-          renderItem={({ item }) => (
-            <PlaylistItem
-              item={item}
-              onDelete={() => deletePlaylist(item._id, false)}
-              onPress={() =>
-                navigation.navigate("SelectedSongScreen", {
-                  playlistId: item._id,
-                  isEditable: true,
-                })
-              }
-            />
-          )}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.listContent}
-          style={{ maxHeight: 450 }}
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.container}>
+        <Image
+          source={require("../../assets/images/playlist2.jpeg")}
+          style={styles.backgroundImage}
         />
-      )}
-      <Animated.View
-        style={[
-          styles.savedPlaylistsContainer,
-          {
-            height: height,
-            backgroundColor: savedPlaylistsContainerBackground,
-          },
-        ]}
-      >
-        <View {...panResponder.panHandlers}>
-          <Pressable
-            style={() => [
-              styles.savedPlaylistsHeader,
-              { backgroundColor: savedPlaylistsHeader },
+        <Text style={styles.title}>Your Playlists</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.createButton,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          ]}
+          onPress={() => navigation.navigate("CreatePlaylist")}
+        >
+          <Text style={styles.createButtonText}>Create Playlist</Text>
+        </Pressable>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <FlatList
+            ref={listRef}
+            data={playlists}
+            renderItem={({ item }) => (
+              <PlaylistItem
+                item={item}
+                onDelete={() => deletePlaylist(item._id, false)}
+                onPress={() =>
+                  navigation.navigate("SelectedSongScreen", {
+                    playlistId: item._id,
+                    isEditable: true,
+                  })
+                }
+              />
+            )}
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={styles.listContent}
+            style={{ maxHeight: 490 }}
+          />
+        )}
+        <Animated.View
+          style={[
+            styles.savedPlaylistsContainer,
+            {
+              height: height,
+            },
+          ]}
+        >
+          <Animated.View
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              backgroundColor: savedPlaylistsContainerBackground,
+              opacity: height.interpolate({
+                inputRange: [collapsedHeight, expandedHeight],
+                outputRange: [0.5, 1],
+                extrapolate: "clamp",
+              }),
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+            }}
+          />
+          <View {...panResponder.panHandlers}>
+            <View
+              style={[
+                styles.swipeIndicatorContainer,
+                { backgroundColor: savedPlaylistsContentColor },
+              ]}
+            >
+              <View style={styles.swipeIndicator} />
+            </View>
+            <Pressable
+              style={() => [
+                styles.savedPlaylistsHeader,
+                { backgroundColor: savedPlaylistsHeader },
+              ]}
+            >
+              <Text style={styles.savedPlaylistsHeaderText}>
+                Saved Playlists
+              </Text>
+            </Pressable>
+          </View>
+          <View
+            style={[
+              styles.savedPlaylistsContent,
+              { backgroundColor: savedPlaylistsContentColor },
             ]}
           >
-            <Text style={styles.savedPlaylistsHeaderText}>Saved Playlists</Text>
-          </Pressable>
-        </View>
-        <View
-          style={
-            (styles.savedPlaylistsContent,
-            { backgroundColor: savedPlaylistsContentColor })
-          }
-        >
-          {loadingSaved ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : savedPlaylists.length === 0 ? (
-            <View style={styles.noSavedPlaylists}>
-              <Text>No saved playlists</Text>
-            </View>
-          ) : (
-            <FlatList
-              data={savedPlaylists}
-              renderItem={({ item }) => (
-                <PlaylistItem
-                  item={item}
-                  onDelete={() => deletePlaylist(item._id, true)}
-                  onPress={() =>
-                    navigation.navigate("SelectedSongScreen", {
-                      playlistId: item._id,
-                      isEditable: false,
-                    })
-                  }
-                />
-              )}
-              keyExtractor={(item) => item._id}
-              contentContainerStyle={styles.listContentSongs}
-              style={{ maxHeight: "90%" }}
-            />
-          )}
-        </View>
-      </Animated.View>
-    </View>
+            {loadingSaved ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : savedPlaylists.length === 0 ? (
+              <View style={styles.noSavedPlaylists}>
+                <Text>No saved playlists</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={savedPlaylists}
+                renderItem={({ item }) => (
+                  <PlaylistItem
+                    item={item}
+                    onDelete={() => deletePlaylist(item._id, true)}
+                    onPress={() =>
+                      navigation.navigate("SelectedSongScreen", {
+                        playlistId: item._id,
+                        isEditable: false,
+                      })
+                    }
+                  />
+                )}
+                keyExtractor={(item) => item._id}
+                contentContainerStyle={styles.listContentSongs}
+                style={{ maxHeight: "90%" }}
+              />
+            )}
+          </View>
+        </Animated.View>
+      </View>
+    </>
   );
 }
 
 const PlaylistItem = ({ item, onDelete, onPress }) => {
-  
   const playlistCardBackground = useThemeColor({}, "playlistCardBackground");
-  const playlistCardBackgroundPressed = useThemeColor({}, "playlistCardBackgroundPressed");
+  const playlistCardBackgroundPressed = useThemeColor(
+    {},
+    "playlistCardBackgroundPressed"
+  );
   const deleteButtonColor = useThemeColor({}, "deleteButton");
   const deleteButtonPressedColor = useThemeColor({}, "deleteButtonPressed");
-  
 
   return (
     <Pressable
@@ -280,7 +314,7 @@ const PlaylistItem = ({ item, onDelete, onPress }) => {
         ]}
         onPress={onDelete}
       >
-        <Text style={styles.deleteButtonText}>Delete</Text>
+        <Icon name="trash-bin" size={20} color="#fff" />
       </Pressable>
     </Pressable>
   );
@@ -295,10 +329,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     width: "100%",
   },
+  backgroundImage: {
+    position: "absolute",
+    width: "200%",
+    height: "200%",
+    opacity: 0.2,
+  },
   title: {
-    fontSize: 24,
+    fontSize: 34,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 30,
+    marginTop: 50,
+    fontFamily: "Montserrat-Regular",
   },
   createButton: {
     padding: 10,
@@ -341,15 +383,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 5,
   },
-  deleteButtonText: {
-    fontWeight: "bold",
-  },
   savedPlaylistsContainer: {
     flexGrow: 1,
     width: "100%",
     position: "absolute",
     bottom: 0,
-    backgroundColor: "#fff",
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingTop: 10,
@@ -363,9 +401,19 @@ const styles = StyleSheet.create({
     shadowRadius: 2.62,
     elevation: 4,
   },
+  swipeIndicatorContainer: {
+    alignItems: "center",
+    paddingVertical: 15,
+  },
+  swipeIndicator: {
+    width: 40,
+    height: 5,
+    backgroundColor: "#ccc",
+    borderRadius: 2.5,
+  },
   savedPlaylistsHeader: {
     alignItems: "center",
-    paddingVertical: 20,
+    paddingBottom: 10,
   },
   savedPlaylistsHeaderText: {
     fontSize: 20,
@@ -384,6 +432,5 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
-
 
 export { Playlists };

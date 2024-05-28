@@ -67,6 +67,7 @@ function RootLayoutNav() {
         name="PlaylistDetails"
         options={{ headerBackTitle: "Back" }}
       />
+      <Stack.Screen name="WelcomeScreen" options={{ headerShown: false }} />
     </Stack>
   );
 }

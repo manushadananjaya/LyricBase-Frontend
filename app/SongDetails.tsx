@@ -1,32 +1,35 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   ActivityIndicator,
   Image,
-  Animated,
-  PanResponder,
-  GestureResponderEvent,
   ScrollView,
   Dimensions,
+  Pressable,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
-
 import apiClient from "@/services/authService";
-
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 type SongDetailsRouteProp = RouteProp<RootStackParamList, "SongDetails">;
 
+type SongDetailsNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "SongDetails"
+>;
+
 export default function SongDetails() {
   const route = useRoute<SongDetailsRouteProp>();
+  const navigation = useNavigation<SongDetailsNavigationProp>();
   const { song } = route.params;
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  // const scale = useRef(new Animated.Value(1)).current;
-  // const initialDistance = useRef(1);
-  // const initialScale = useRef(1);
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
   useEffect(() => {
     const fetchImageUrl = async () => {
@@ -43,82 +46,43 @@ export default function SongDetails() {
     fetchImageUrl();
   }, [song._id]);
 
-  const MAX_SCALE = 3;
-  const MIN_SCALE = 1;
-
-  // const panResponder = useRef(
-  //   PanResponder.create({
-  //     onStartShouldSetPanResponder: () => true,
-  //     onMoveShouldSetPanResponder: (_, gestureState) =>
-  //       gestureState.numberActiveTouches === 2,
-  //     onPanResponderGrant: (e: GestureResponderEvent, gestureState) => {
-  //       if (gestureState.numberActiveTouches === 2) {
-  //         const touches = e.nativeEvent.touches;
-  //         if (touches.length >= 2) {
-  //           const touch1 = touches[0];
-  //           const touch2 = touches[1];
-  //           initialDistance.current = Math.sqrt(
-  //             Math.pow(touch1.pageX - touch2.pageX, 2) +
-  //               Math.pow(touch1.pageY - touch2.pageY, 2)
-  //           );
-  //           initialScale.current = scale._value;
-  //         }
-  //       }
-  //     },
-  //     onPanResponderMove: (e: GestureResponderEvent, gestureState) => {
-  //       if (gestureState.numberActiveTouches === 2) {
-  //         const touches = e.nativeEvent.touches;
-  //         if (touches.length >= 2) {
-  //           const touch1 = touches[0];
-  //           const touch2 = touches[1];
-  //           const distance = Math.sqrt(
-  //             Math.pow(touch1.pageX - touch2.pageX, 2) +
-  //               Math.pow(touch1.pageY - touch2.pageY, 2)
-  //           );
-  //           let newScale =
-  //             (distance / initialDistance.current) * initialScale.current;
-
-  //           // Clamp the newScale value to be within the min and max scale limits
-  //           newScale = Math.max(MIN_SCALE, Math.min(newScale, MAX_SCALE));
-  //           scale.setValue(newScale);
-  //         }
-  //       }
-  //     },
-  //     onPanResponderRelease: () => {
-  //       Animated.spring(scale, {
-  //         toValue: 1,
-  //         useNativeDriver: true,
-  //       }).start();
-  //     },
-  //   })
-  // ).current;
+  const handleGetChords = () => {
+    // Navigate to the Chords screen or perform another action
+    // navigation.navigate("Chords", { songId: song._id });
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{song.title}</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>{song.title}</Text>
+        <Pressable
+          style={({ pressed }) => [
+            styles.getChordsButton,
+            { backgroundColor: pressed ? buttonPressedColor : buttonColor},
+          ]}
+          onPress={handleGetChords}
+        >
+          <Text style={styles.getChordsButtonText}>Get Chords</Text>
+        </Pressable>
+      </View>
       <Text style={styles.artist}>{song.artist}</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : imageUrl ? (
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
-          maximumZoomScale={MAX_SCALE}
-          minimumZoomScale={MIN_SCALE}
+          maximumZoomScale={3}
+          minimumZoomScale={1}
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}
           centerContent={true}
           style={styles.scrollContainerImage}
         >
-          {/* <Animated.View
-            style={[styles.imageContainer, { transform: [{ scale }] }]}
-            {...panResponder.panHandlers}
-          > */}
-            <Image
-              source={{ uri: imageUrl }}
-              style={styles.image}
-              resizeMode="contain"
-            />
-          {/* </Animated.View> */}
+          <Image
+            source={{ uri: imageUrl }}
+            style={styles.image}
+            resizeMode="contain"
+          />
         </ScrollView>
       ) : (
         <Text>No Image available</Text>
@@ -134,13 +98,30 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 10,
   },
+  header: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    marginLeft: "5%",
+  },
+  getChordsButton: {
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: "#0000ff",
+  },
+  getChordsButtonText: {
+    fontSize: 16,
+    color: "#fff",
   },
   artist: {
     fontSize: 18,
-    marginTop: 10,
+    marginTop: 5,
     marginBottom: 20,
   },
   scrollContainer: {
@@ -148,14 +129,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  imageContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
   image: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height * 0.6,
-    aspectRatio: 1, 
+    aspectRatio: 1,
   },
   scrollContainerImage: {
     width: "100%",

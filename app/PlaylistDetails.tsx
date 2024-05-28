@@ -38,8 +38,12 @@ export default function PlaylistDetails() {
   const { playlist } = route.params;
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-    const buttonPressedColor = useThemeColor({}, "buttonPressed");
+    const buttonPressedColorSave = useThemeColor({}, "buttonColorItemsPressed");
+    const buttonColorSave = useThemeColor({}, "buttonColorItems");
     const buttonColor = useThemeColor({}, "button");
+    const buttonPressedColor = useThemeColor({}, "buttonPressed");
+
+
 
 
   useEffect(() => {
@@ -65,7 +69,7 @@ export default function PlaylistDetails() {
     <Pressable
       style={({ pressed }) => [
         styles.songCard,
-        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+        { backgroundColor: pressed ? buttonPressedColorSave : buttonColorSave },
       ]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >

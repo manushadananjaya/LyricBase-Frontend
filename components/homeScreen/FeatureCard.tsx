@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Pressable } from "react-native";
-import { Text, View } from "@/components/Themed";
+import { View ,Text } from "@/components/Themed";
+
 import { useThemeColor } from "@/hooks/useThemeColor"
 
 interface FeatureCardProps {
@@ -16,18 +17,21 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 }) => {
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const FeatureCardBackground = useThemeColor({}, "featureCardBackground");
+  const FeatureCardContent = useThemeColor({}, "featureCardContent");
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: FeatureCardBackground }]}>
       <Text style={styles.cardTitle}>{title}</Text>
-      <Text style={styles.cardContent}>{content}</Text>
+      <Text style={[styles.cardContent,{color : FeatureCardContent}]}>{content}</Text>
       <Pressable
         style={({ pressed }) => [
-          styles.button,{ backgroundColor: pressed ? buttonPressedColor : buttonColor },
+          styles.button,
+          { backgroundColor: pressed ? buttonPressedColor : buttonColor },
         ]}
         onPress={onPress}
       >
-        <Text style={styles.buttonText}>Explore</Text>
+        <Text style={styles.buttonText}>Coming Soon</Text>
       </Pressable>
     </View>
   );
@@ -44,20 +48,24 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
+    // backgroundColor: "rgba(233, 234, 236, 0.5)",
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
+    // color: "#000",
   },
   cardContent: {
     fontSize: 14,
     marginBottom: 10,
+    color: "#888",
   },
   button: {
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
+    marginTop: 5,
     alignItems: "center",
   },
   buttonText: {

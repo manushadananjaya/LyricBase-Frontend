@@ -4,6 +4,7 @@ import {
   Pressable,
   FlatList,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -11,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
+import { Stack } from "expo-router";
 
 type SearchScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -38,8 +40,8 @@ interface User {
 }
 
 export default function Search() {
-  const buttonColor = useThemeColor({}, "button");
-  const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const buttonColor = useThemeColor({}, "buttonColorItems");
+  const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"name" | "artist" | "playlist">("name");
   const [songs, setSongs] = useState<Song[]>([]);
@@ -158,7 +160,13 @@ export default function Search() {
   };
 
   return (
+    <>
+    <Stack.Screen options={{ headerShown: false }} />
     <View style={styles.container}>
+      <Image
+        source={require("../../assets/images/search2.jpg")}
+        style={styles.backgroundImage}
+      />
       <Text style={styles.titleSearch}>Search Songs and Playlists</Text>
       <TextInput
         style={styles.searchBar}
@@ -219,6 +227,7 @@ export default function Search() {
         />
       )}
     </View>
+    </>
   );
 }
 
@@ -232,9 +241,11 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   titleSearch: {
-    fontSize: 24,
+    marginTop: "15%",
+    fontSize: 34,
     fontWeight: "bold",
     marginBottom: 20,
+    width: "100%",
   },
   searchBar: {
     width: "100%",
@@ -249,6 +260,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     width: "100%",
     marginBottom: 20,
+    backgroundColor: "transparent",
   },
   filterButton: {
     paddingVertical: 10,
@@ -257,8 +269,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   activeFilter: {
-    backgroundColor: "#007BFF",
-    borderColor: "#007BFF",
+    backgroundColor: "#BDB4FE",
+    borderColor: "#E0EAFF",
   },
   filterText: {
     fontSize: 16,
@@ -288,6 +300,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
+    fontFamily: "Montserrat-Regular",
   },
   artist: {
     fontSize: 16,
@@ -296,5 +309,13 @@ const styles = StyleSheet.create({
   noResultsText: {
     fontSize: 18,
     color: "#888",
+  },
+  backgroundImage: {
+    position: "absolute",
+    width: "200%",
+    height: "180%",
+    top: 0,
+    left: -30,
+    opacity: 0.2,
   },
 });
