@@ -5,8 +5,7 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-export const BASE_URL =
-  "https://8cfa-2402-d000-8128-51d-6dea-4019-4fd2-253d.ngrok-free.app";
+export const BASE_URL = "https://lyricbase.azurewebsites.net";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
