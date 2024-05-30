@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Text, View } from "@/components/Themed";
-
-import { StyleSheet, Pressable, FlatList} from "react-native";
+import { StyleSheet, Pressable, FlatList, Dimensions } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
@@ -33,7 +32,6 @@ export default function SelectedSongsScreen() {
   const navigation = useNavigation<SelectedSongsScreenNavigationProp>();
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
-
   const buttonColorItems = useThemeColor({}, "buttonColorItems");
   const buttonPressedColorItems = useThemeColor({}, "buttonColorItemsPressed");
 
@@ -51,7 +49,9 @@ export default function SelectedSongsScreen() {
     <Pressable
       style={({ pressed }) => [
         styles.selectedCard,
-        { backgroundColor: pressed ? buttonPressedColorItems : buttonColorItems },
+        {
+          backgroundColor: pressed ? buttonPressedColorItems : buttonColorItems,
+        },
       ]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
@@ -62,35 +62,48 @@ export default function SelectedSongsScreen() {
     </Pressable>
   );
 
+  const { width, height } = Dimensions.get("window");
+  const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.titleMain}>{playlistName}</Text>
-
+        <Text
+          style={[styles.titleMain, { fontSize: responsiveFontSize * 1 }]}
+        >
+          {playlistName}
+        </Text>
         <Pressable
           style={({ pressed }) => [
             styles.editButton,
             {
-              backgroundColor: pressed
-                ? buttonPressedColor
-                : buttonColor,
+              backgroundColor: pressed ? buttonPressedColor : buttonColor,
             },
           ]}
           onPress={() =>
             navigation.navigate("EditPlaylist", { playlistId, isEditable })
           }
         >
-          <Text style={styles.editButtonText}>Edit this Playlist</Text>
+          <Text
+            style={[
+              styles.editButtonText,
+              { fontSize: responsiveFontSize * 0.9 },
+            ]}
+          >
+            Edit this Playlist
+          </Text>
         </Pressable>
       </View>
       <View style={styles.selectedSongsContainer}>
-        <Text style={styles.subtitle}>Selected Songs</Text>
+        <Text style={[styles.subtitle, { fontSize: responsiveFontSize * 0.9 }]}>
+          Selected Songs
+        </Text>
         <FlatList
           data={selectedSongs}
           renderItem={renderSelectedSong}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.selectedListContent}
-          style={{ maxHeight: "90%" }}
+          style={{ maxHeight: height * 0.7 }}
         />
       </View>
     </View>
@@ -103,7 +116,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 50,
     paddingHorizontal: 20,
-    // backgroundColor: "#f7f7f7",
   },
   header: {
     width: "100%",
@@ -113,12 +125,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   titleMain: {
+    flex: 1,
     fontSize: 24,
     fontWeight: "bold",
   },
   editButton: {
-    // backgroundColor: "#007BFF",
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 5,
   },
   editButtonText: {
@@ -141,7 +154,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   selectedCard: {
-    // backgroundColor: "#fff",
     padding: 15,
     marginVertical: 5,
     borderRadius: 10,

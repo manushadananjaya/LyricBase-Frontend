@@ -27,6 +27,7 @@ const SignUp: React.FC = () => {
     clearError,
     confirmPassword,
     setConfirmPassword,
+    isUsernameAvailable,
   } = useSignUp();
 
   const buttonColor = "#6200ee";
@@ -58,18 +59,24 @@ const SignUp: React.FC = () => {
       <ImageBackground
         source={require("../../assets/images/welcome.jpg")}
         style={styles.background}
-      ></ImageBackground>
+      />
       <Text style={styles.welcomeTitle}>Welcome!</Text>
       <View style={styles.container}>
         <Text style={styles.title}>Sign Up</Text>
         <TextInput
           style={styles.input}
-          placeholder="Name"
+          placeholder="Username"
           value={name}
           onChangeText={setName}
-          autoCapitalize="words"
+          autoCapitalize="none"
           placeholderTextColor={"#000"}
         />
+        {isUsernameAvailable === false && (
+          <Text style={styles.usernameError}>Username is already taken</Text>
+        )}
+        {isUsernameAvailable === true && (
+          <Text style={styles.usernameAvailable}>Username is available</Text>
+        )}
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -196,6 +203,18 @@ const styles = StyleSheet.create({
   error: {
     color: "red",
     marginBottom: 10,
+  },
+  usernameError: {
+    color: "red",
+    marginBottom: 10,
+    alignSelf: "flex-start",
+    fontFamily: "Montserrat-Regular",
+  },
+  usernameAvailable: {
+    color: "green",
+    marginBottom: 10,
+    alignSelf: "flex-start",
+    fontFamily: "Montserrat-Regular",
   },
   loginLink: {
     marginTop: 10,

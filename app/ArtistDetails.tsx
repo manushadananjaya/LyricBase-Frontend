@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet,  Pressable, FlatList } from "react-native";
+import {
+  StyleSheet,
+  FlatList,
+  Pressable,
+  Image,
+  Dimensions,
+} from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import axios, { AxiosResponse } from "axios"; // Import AxiosResponse for correct typing
 import { useNavigation, RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
-
 import apiClient from "@/services/authService";
-
 
 type ArtistDetailsRouteProp = RouteProp<RootStackParamList, "ArtistDetails">;
 
@@ -16,13 +19,13 @@ interface Song {
   title: string;
   artist: string;
   _id: string;
-  
 }
 
-export default function ArtistDetails() {
+const { width, height } = Dimensions.get("window");
 
-    const buttonColor = useThemeColor({}, "buttonColorItems");
-    const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");  
+export default function ArtistDetails() {
+  const buttonColor = useThemeColor({}, "buttonColorItems");
+  const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
   const route = useRoute<ArtistDetailsRouteProp>();
   const { artist } = route.params;
   const [artistSongs, setArtistSongs] = useState<Song[]>([]);
@@ -30,12 +33,15 @@ export default function ArtistDetails() {
 
   useEffect(() => {
     apiClient
-      .get(`/artists/${artist}`) // Adjust the API endpoint to fetch songs by the artist
+      .get(`/artists/${artist}`)
       .then((response: AxiosResponse<Song[]>) => {
         setArtistSongs(response.data);
       })
       .catch((error) => console.error(error));
   }, [artist]);
+
+  const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
+  const responsivePadding = width / 40; // Adjust the divisor to get the desired padding
 
   const renderItem = ({
     item,
@@ -45,26 +51,43 @@ export default function ArtistDetails() {
     <Pressable
       key={item.id}
       style={({ pressed }) => [
-        styles.item,
-        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+        styles.card,
+        {
+          backgroundColor: pressed ? buttonPressedColor : buttonColor,
+          padding: responsivePadding,
+        },
       ]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
-      <Text style={styles.title}>
+      <Text
+        style={[styles.title, { fontSize: responsiveFontSize * 0.9 }]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
         {item.title}
-        <Text style={styles.artist}> {item.artist}</Text>
+      </Text>
+      <Text
+        style={[styles.artist, { fontSize: responsiveFontSize * 0.75 }]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
+        {item.artist}
       </Text>
     </Pressable>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{artist}'s Songs</Text>
+      <Text
+        style={[styles.header, { fontSize: responsiveFontSize * 1.5 }]}
+      >
+        {artist}'s Songs
+      </Text>
       <FlatList
         data={artistSongs}
         renderItem={renderItem}
         keyExtractor={(item, index) => `${item.id}-${index}`}
-        contentContainerStyle={styles.list}
+        contentContainerStyle={styles.listContent}
       />
     </View>
   );
@@ -73,21 +96,21 @@ export default function ArtistDetails() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    padding: 20,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  list: {
     width: "100%",
   },
-  item: {
-    backgroundColor: "#fff",
-    padding: 15,
+  listContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  header: {
+    fontFamily: "Montserrat-Bold",
+    fontWeight: "bold",
+    marginBottom: 20,
+    marginTop: "5%",
+    left: "5%",
+    // color: "black",
+  },
+  card: {
     marginVertical: 5,
     borderRadius: 10,
     width: "100%",
@@ -99,16 +122,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-  },
-  itemPressed: {
-    opacity: 0.5,
+    height: 70, // Set a fixed height for consistency
+    justifyContent: "center", // Center content vertically
   },
   title: {
-    fontSize: 20,
     fontWeight: "bold",
   },
   artist: {
-    fontSize: 16,
     color: "#888",
   },
 });
+
+export default ArtistDetails;

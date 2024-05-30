@@ -1,4 +1,5 @@
 
+import { TextInput } from "@/components/Themed";
 import { Button } from "react-native";
 
 // Colors.ts
@@ -37,6 +38,8 @@ export default {
 
     featureCardBackground: "rgba(255, 255, 255, 0.5)",
     featureCardContent: "#373A40",
+
+    TextInputColor: "#000000",
   },
   dark: {
     textMain: "#FCFCFD",
@@ -67,5 +70,7 @@ export default {
 
     featureCardBackground: "rgba(0, 0, 0, 0.5)",
     featureCardContent: "#888",
+
+    TextInputColor: "white",
   },
 };

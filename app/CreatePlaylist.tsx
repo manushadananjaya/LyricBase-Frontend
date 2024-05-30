@@ -5,13 +5,13 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
+  Dimensions,
 } from "react-native";
 import { Text, View, TextInput } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
-import { useAuthContext } from "@/hooks/useAuthContext";
 import apiClient from "@/services/authService";
 
 type CreatePlaylistScreenNavigationProp = StackNavigationProp<
@@ -39,11 +39,6 @@ export default function CreatePlaylistScreen() {
 
   const buttonColor = useThemeColor({}, "buttonColorItems");
   const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
-
-  
-
-  // Get user from context
-  // const { user } = useAuthContext();
 
   useEffect(() => {
     if (searchQuery.trim().length > 0) {
@@ -109,10 +104,18 @@ export default function CreatePlaylistScreen() {
     </Pressable>
   );
 
+  const { width, height } = Dimensions.get("window");
+  const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
+  const responsivePadding = width / 40; // Adjust the divisor to get the desired padding
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.titleMain}>Create Playlist</Text>
+        <Text
+          style={[styles.titleMain, { fontSize: responsiveFontSize * 1.1 }]}
+        >
+          Create Playlist
+        </Text>
         <Pressable
           style={({ pressed }) => [
             styles.saveButton,
@@ -120,18 +123,31 @@ export default function CreatePlaylistScreen() {
           ]}
           onPress={handleSavePlaylist}
         >
-          <Text style={styles.saveButtonText}>Save Playlist</Text>
+          <Text
+            style={[
+              styles.saveButtonText,
+              { fontSize: responsiveFontSize * 0.9 },
+            ]}
+          >
+            Save Playlist
+          </Text>
         </Pressable>
       </View>
       <TextInput
-        style={styles.playlistNameInput}
+        style={[
+          styles.playlistNameInput,
+          { fontSize: responsiveFontSize * 0.8, padding: responsivePadding },
+        ]}
         placeholder="Playlist Name"
         value={playlistName}
         onChangeText={setPlaylistName}
         maxLength={20}
       />
       <TextInput
-        style={styles.searchBar}
+        style={[
+          styles.searchBar,
+          { fontSize: responsiveFontSize * 0.8, padding: responsivePadding },
+        ]}
         placeholder="Search songs"
         value={searchQuery}
         onChangeText={setSearchQuery}
@@ -144,7 +160,7 @@ export default function CreatePlaylistScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
-          style={{ maxHeight: 470 }}
+          style={{ maxHeight: height * 0.5 }}
         />
       )}
     </View>

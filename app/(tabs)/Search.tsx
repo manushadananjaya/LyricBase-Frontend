@@ -5,8 +5,11 @@ import {
   FlatList,
   ActivityIndicator,
   Image,
+  TextInput,
+  Dimensions,
+  Platform,
 } from "react-native";
-import { Text, View, TextInput } from "@/components/Themed";
+import { Text, View } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -39,9 +42,12 @@ interface User {
   name: string;
 }
 
+const { width, height } = Dimensions.get("window");
+
 export default function Search() {
   const buttonColor = useThemeColor({}, "buttonColorItems");
   const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
+  const textInputColor = useThemeColor({}, "textInputColor");
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState<"name" | "artist" | "playlist">("name");
   const [songs, setSongs] = useState<Song[]>([]);
@@ -161,72 +167,74 @@ export default function Search() {
 
   return (
     <>
-    <Stack.Screen options={{ headerShown: false }} />
-    <View style={styles.container}>
-      <Image
-        source={require("../../assets/images/search2.jpg")}
-        style={styles.backgroundImage}
-      />
-      <Text style={styles.titleSearch}>Search Songs and Playlists</Text>
-      <TextInput
-        style={styles.searchBar}
-        placeholder="Search songs by name, artist or playlists"
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
-      <View style={styles.filterContainer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.filterButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
-            filter === "name" && styles.activeFilter,
-          ]}
-          onPress={() => setFilter("name")}
-        >
-          <Text style={styles.filterText}>By Name</Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.filterButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
-            filter === "artist" && styles.activeFilter,
-          ]}
-          onPress={() => setFilter("artist")}
-        >
-          <Text style={styles.filterText}>By Artist</Text>
-        </Pressable>
-        <Pressable
-          style={({ pressed }) => [
-            styles.filterButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
-            filter === "playlist" && styles.activeFilter,
-          ]}
-          onPress={() => setFilter("playlist")}
-        >
-          <Text style={styles.filterText}>By Playlist</Text>
-        </Pressable>
-      </View>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : noResults ? (
-        <Text style={styles.noResultsText}>No results found</Text>
-      ) : (
-        <FlatList
-          data={filter === "playlist" ? playlists : songs}
-          renderItem={
-            filter === "playlist" ? renderPlaylistItem : renderSongItem
-          }
-          keyExtractor={(item) => item._id} // Ensure unique keys
-          contentContainerStyle={styles.listContent}
-          style={{ maxHeight: 450 }}
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.container}>
+        <Image
+          source={require("../../assets/images/search2.jpg")}
+          style={styles.backgroundImage}
         />
-      )}
-    </View>
+        <Text style={styles.titleSearch}>Search Songs and Playlists</Text>
+        <TextInput
+          style={styles.searchBar}
+          placeholder="Search songs by name, artist or playlists"
+          placeholderTextColor="#888"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          selectionColor={textInputColor}
+        />
+        <View style={styles.filterContainer}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.filterButton,
+              { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+              filter === "name" && styles.activeFilter,
+            ]}
+            onPress={() => setFilter("name")}
+          >
+            <Text style={styles.filterText}>By Name</Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.filterButton,
+              { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+              filter === "artist" && styles.activeFilter,
+            ]}
+            onPress={() => setFilter("artist")}
+          >
+            <Text style={styles.filterText}>By Artist</Text>
+          </Pressable>
+          <Pressable
+            style={({ pressed }) => [
+              styles.filterButton,
+              { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+              filter === "playlist" && styles.activeFilter,
+            ]}
+            onPress={() => setFilter("playlist")}
+          >
+            <Text style={styles.filterText}>By Playlist</Text>
+          </Pressable>
+        </View>
+        <View
+          style={styles.separator}
+          lightColor="#eee"
+          darkColor="rgba(255,255,255,0.1)"
+        />
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : noResults ? (
+          <Text style={styles.noResultsText}>No results found</Text>
+        ) : (
+          <FlatList
+            data={filter === "playlist" ? playlists : songs}
+            renderItem={
+              filter === "playlist" ? renderPlaylistItem : renderSongItem
+            }
+            keyExtractor={(item) => item._id}
+            contentContainerStyle={styles.listContent}
+            style={{ maxHeight: 450 }}
+          />
+        )}
+      </View>
     </>
   );
 }
@@ -236,35 +244,36 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 50,
-    paddingHorizontal: 20,
+    paddingTop: height * 0.05,
+    paddingHorizontal: width * 0.05,
     width: "100%",
   },
   titleSearch: {
-    marginTop: "15%",
+    marginTop: height * 0.05,
     fontSize: 34,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: height * 0.02,
     width: "100%",
+    textAlign: "center",
   },
   searchBar: {
     width: "100%",
-    padding: 10,
+    padding: height * 0.015,
     borderWidth: 1,
     borderRadius: 5,
-    marginBottom: 20,
+    marginBottom: height * 0.02,
     fontSize: 16,
   },
   filterContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
-    marginBottom: 20,
+    marginBottom: height * 0.02,
     backgroundColor: "transparent",
   },
   filterButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingVertical: height * 0.01,
+    paddingHorizontal: width * 0.04,
     borderRadius: 5,
     borderWidth: 1,
   },
@@ -278,14 +287,14 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     width: "100%",
-    marginBottom: 20,
+    marginBottom: height * 0.02,
   },
   listContent: {
     width: "100%",
   },
   card: {
-    padding: 15,
-    marginVertical: 5,
+    padding: height * 0.02,
+    marginVertical: height * 0.01,
     borderRadius: 10,
     width: "100%",
     shadowColor: "#000",

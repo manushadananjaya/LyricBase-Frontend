@@ -5,6 +5,7 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
+  Dimensions,
 } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Text, View, TextInput } from "@/components/Themed";
@@ -145,10 +146,18 @@ export default function EditPlaylistScreen() {
     </Pressable>
   );
 
+  const { width, height } = Dimensions.get("window");
+  const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
+  const responsivePadding = width / 40; // Adjust the divisor to get the desired padding
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.titleMain}>Edit Playlist</Text>
+        <Text
+          style={[styles.titleMain, { fontSize: responsiveFontSize * 1.5 }]}
+        >
+          Edit Playlist
+        </Text>
         <Pressable
           style={({ pressed }) => [
             styles.saveButton,
@@ -160,21 +169,32 @@ export default function EditPlaylistScreen() {
           ]}
           onPress={handleSavePlaylist}
         >
-          <Text style={styles.saveButtonText}>
+          <Text
+            style={[
+              styles.saveButtonText,
+              { fontSize: responsiveFontSize * 0.9 },
+            ]}
+          >
             {isEditable ? "Save" : "Save as New Playlist"}
           </Text>
         </Pressable>
       </View>
 
       <TextInput
-        style={styles.playlistNameInput}
+        style={[
+          styles.playlistNameInput,
+          { fontSize: responsiveFontSize * 0.8, padding: responsivePadding },
+        ]}
         placeholder="Playlist Name"
         value={playlistName}
         onChangeText={setPlaylistName}
       />
 
       <TextInput
-        style={styles.searchBar}
+        style={[
+          styles.searchBar,
+          { fontSize: responsiveFontSize * 0.8, padding: responsivePadding },
+        ]}
         placeholder="Search songs"
         value={searchQuery}
         onChangeText={setSearchQuery}
@@ -188,11 +208,14 @@ export default function EditPlaylistScreen() {
           renderItem={renderItem}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.listContent}
+          style={{ maxHeight: height * 0.4 }}
         />
       )}
 
       <View style={styles.selectedSongsContainer}>
-        <Text style={styles.subtitle}>Selected Songs</Text>
+        <Text style={[styles.subtitle, { fontSize: responsiveFontSize * 0.9 }]}>
+          Selected Songs
+        </Text>
         <FlatList
           data={selectedSongs}
           renderItem={renderSelectedSong}
@@ -201,7 +224,9 @@ export default function EditPlaylistScreen() {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.selectedListContent}
         />
-        <Text style={styles.removeHint}>
+        <Text
+          style={[styles.removeHint, { fontSize: responsiveFontSize * 0.7 }]}
+        >
           You can remove selected songs by tapping on it
         </Text>
       </View>
@@ -233,10 +258,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 10,
-    fontSize: 16,
   },
   saveButton: {
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 5,
   },
   saveButtonText: {
@@ -259,7 +284,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 20,
-    fontSize: 16,
   },
   listContent: {
     flexGrow: 1,
