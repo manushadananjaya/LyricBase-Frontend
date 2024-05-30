@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { Alert } from "react-native";
 import { useAuthContext } from "./useAuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { BASE_URL } from "@/services/authService"; 
-
+import { BASE_URL } from "@/services/authService";
 
 interface SignUpResponse {
   success: boolean;
@@ -18,7 +17,50 @@ const useSignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<
+    boolean | null
+  >(null);
   const { dispatch } = useAuthContext();
+
+  const checkUsernameAvailability = async (username: string) => {
+    try {
+      if (
+        username.length < 4 ||
+        !/^[a-zA-Z0-9_]*$/.test(username) ||
+        username.includes(" ")
+      ) {
+        setError(
+          "Username must be at least 4 characters long and can only contain letters, numbers, and underscores"
+        );
+        setIsUsernameAvailable(false);
+        return;
+      }
+
+      const response = await axios.get(`${BASE_URL}/auth/checkUsername/${username}`);
+      
+      if (response.status === 200 && username.length > 4) {
+        setIsUsernameAvailable(true);
+        setError(null);
+      }
+      else if (username.length < 4) {
+        setError("Username must be at least 4 characters long");
+      }
+      
+    } catch (error: any) {
+      setError(error.response?.data?.error || "Username check error");
+      setIsUsernameAvailable(null);
+    }
+  };
+
+  
+  console.log(isUsernameAvailable);
+  
+
+  useEffect(() => {
+    if (name.length > 0) {
+      checkUsernameAvailability(name);
+    }
+  }, [name]);
 
   const handleSignUp = async (): Promise<SignUpResponse> => {
     setLoading(true);
@@ -38,8 +80,8 @@ const useSignUp = () => {
       setLoading(false);
       return { success: false, message };
     }
-    
-    // check if password is at least 8 characters
+
+    // Check if password is at least 8 characters
     if (password.length < 8) {
       const message = "Password must be at least 8 characters long";
       setError(message);
@@ -47,6 +89,22 @@ const useSignUp = () => {
       return { success: false, message };
     }
 
+    // Check if name is longer than 4 characters and doesn't contain special characters or spaces
+    if (name.length < 4 || !/^[a-zA-Z0-9_]*$/.test(name) || name.includes(" ")){
+      const message = "Username must be at least 4 characters long and can only contain letters, numbers, and underscores";
+      setError(message);
+      setLoading(false);
+      return { success: false, message };
+    }
+    
+
+    // Check if username is available
+    if (isUsernameAvailable === false) {
+      const message = "Username is already taken";
+      setError(message);
+      setLoading(false);
+      return { success: false, message };
+    }
 
     try {
       const response = await axios.post(`${BASE_URL}/auth/signup`, {
@@ -92,6 +150,7 @@ const useSignUp = () => {
     clearError,
     confirmPassword,
     setConfirmPassword,
+    isUsernameAvailable,
   };
 };
 
