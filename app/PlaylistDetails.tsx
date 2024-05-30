@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { Text, View } from "@/components/Themed";
-import { StyleSheet, Pressable, FlatList, } from "react-native";
+import { StyleSheet, Pressable, FlatList, Dimensions } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
-// import { useAuthContext } from "@/hooks/useAuthContext";
-
 
 type PlaylistDetailsRouteProp = RouteProp<
   RootStackParamList,
@@ -32,19 +30,18 @@ interface Playlist {
   songIds: string[];
 }
 
+const { width, height } = Dimensions.get("window");
+
 export default function PlaylistDetails() {
   const navigation = useNavigation();
   const route = useRoute<PlaylistDetailsRouteProp>();
   const { playlist } = route.params;
   const [songs, setSongs] = useState<Song[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-    const buttonPressedColorSave = useThemeColor({}, "buttonColorItemsPressed");
-    const buttonColorSave = useThemeColor({}, "buttonColorItems");
-    const buttonColor = useThemeColor({}, "button");
-    const buttonPressedColor = useThemeColor({}, "buttonPressed");
-
-
-
+  const buttonPressedColorSave = useThemeColor({}, "buttonColorItemsPressed");
+  const buttonColorSave = useThemeColor({}, "buttonColorItems");
+  const buttonColor = useThemeColor({}, "button");
+  const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -96,28 +93,46 @@ export default function PlaylistDetails() {
     }
   };
 
+  const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.titleMain}>{playlist.title}</Text>
+        <Text style={[styles.titleMain, { fontSize: responsiveFontSize * 1 }]}>
+          {playlist.title}
+        </Text>
         <Pressable
           style={({ pressed }) => [
             styles.saveButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+            {
+              backgroundColor: pressed ? buttonPressedColor : buttonColor,
+            },
           ]}
           onPress={handleSavePlaylist}
         >
-          <Text style={styles.saveButtonText}>Save this Playlist</Text>
+          <Text
+            style={[
+              styles.saveButtonText,
+              { fontSize: responsiveFontSize * 0.9 },
+            ]}
+          >
+            Save this Playlist
+          </Text>
         </Pressable>
       </View>
-      <Text style={styles.user}>by {playlist.userPlay.name}</Text>
+      <Text style={[styles.user, { fontSize: responsiveFontSize * 0.9 }]}>
+        by {playlist.userPlay.name}
+      </Text>
       <View style={styles.selectedSongsContainer}>
-        <Text style={styles.subtitle}>Selected Songs</Text>
+        <Text style={[styles.subtitle, { fontSize: responsiveFontSize * 0.9 }]}>
+          Selected Songs
+        </Text>
         <FlatList
           data={songs}
           renderItem={renderSongItem}
           keyExtractor={(item) => item._id}
           contentContainerStyle={styles.selectedListContent}
+          style={{ maxHeight: height * 0.7 }}
         />
       </View>
     </View>
@@ -128,51 +143,52 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingTop: 50,
-    paddingHorizontal: 20,
-    // backgroundColor: "#f7f7f7",
+    paddingTop: height * 0.05,
+    paddingHorizontal: width * 0.05,
   },
   header: {
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: height * 0.02,
   },
   titleMain: {
-    fontSize: 24,
+    flex: 1,
+    fontSize: width * 0.06,
     fontWeight: "bold",
   },
   saveButton: {
-    backgroundColor: "#007BFF",
-    padding: 10,
+    paddingVertical: height * 0.01,
+    paddingHorizontal: width * 0.03,
     borderRadius: 5,
   },
   saveButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: width * 0.04,
   },
   user: {
-    fontSize: 18,
-    marginBottom: 20,
+    fontSize: width * 0.045,
+    marginBottom: height * 0.02,
   },
   selectedSongsContainer: {
     width: "100%",
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: height * 0.02,
+    marginTop: height * 0.02,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: width * 0.045,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: height * 0.01,
   },
   selectedListContent: {
     flexGrow: 1,
     width: "100%",
+    paddingBottom: height * 0.01,
   },
   songCard: {
-    padding: 15,
-    marginVertical: 5,
+    padding: height * 0.02,
+    marginVertical: height * 0.005,
     borderRadius: 10,
     width: "100%",
     shadowColor: "#000",
@@ -183,16 +199,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.23,
     shadowRadius: 2.62,
     elevation: 4,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
   songTitle: {
-    fontSize: 14,
+    fontSize: width * 0.035,
     fontWeight: "bold",
   },
   songArtist: {
-    fontSize: 12,
+    fontSize: width * 0.03,
     color: "#888",
   },
 });
