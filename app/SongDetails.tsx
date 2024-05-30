@@ -57,7 +57,11 @@ export default function SongDetails() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.title, { fontSize: responsiveFontSize }]}>
+        <Text
+          style={[styles.title, { fontSize: responsiveFontSize }]}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
           {song.title}
         </Text>
         <Pressable
@@ -117,6 +121,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "bold",
+    flex: 1, // Ensures title takes up as much space as possible
+    marginRight: 10, // Adds some space between the title and the button
   },
   getChordsButton: {
     borderRadius: 5,
