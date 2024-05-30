@@ -3,7 +3,8 @@ import { Dimensions, Pressable, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
 import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
+// import { useColorScheme } from "@/components/useColorScheme";
+import { useThemeColor } from "@/hooks/useThemeColor";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 
 const { width, height } = Dimensions.get("window");
@@ -18,17 +19,20 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const tabBarActiveTintColor = useThemeColor({}, "tint");
+  const tabBarInactiveTintColor = useThemeColor({}, "tabIconDefault");
+  const backgroundColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        tabBarInactiveTintColor: Colors[colorScheme ?? "light"].tabIconDefault,
+        tabBarActiveTintColor: tabBarActiveTintColor,
+        tabBarInactiveTintColor: tabBarInactiveTintColor,
         tabBarStyle: [
           styles.tabBar,
           {
-            backgroundColor: Colors[colorScheme ?? "light"].background,
+            backgroundColor: backgroundColor,
           },
         ],
         tabBarLabelStyle: styles.tabBarLabel,
@@ -48,7 +52,7 @@ export default function TabLayout() {
                   <FontAwesome
                     name="info-circle"
                     size={width * 0.06}
-                    color={Colors[colorScheme ?? "light"].text}
+                    color={textColor}
                     style={{
                       marginRight: width * 0.04,
                       opacity: pressed ? 0.5 : 1,
