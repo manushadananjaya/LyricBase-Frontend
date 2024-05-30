@@ -34,6 +34,9 @@ export default function SelectedSongsScreen() {
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
+  const buttonColorItems = useThemeColor({}, "buttonColorItems");
+  const buttonPressedColorItems = useThemeColor({}, "buttonColorItemsPressed");
+
   useEffect(() => {
     apiClient
       .get(`/playlists/${playlistId}`)
@@ -48,7 +51,7 @@ export default function SelectedSongsScreen() {
     <Pressable
       style={({ pressed }) => [
         styles.selectedCard,
-        { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+        { backgroundColor: pressed ? buttonPressedColorItems : buttonColorItems },
       ]}
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
@@ -67,7 +70,11 @@ export default function SelectedSongsScreen() {
         <Pressable
           style={({ pressed }) => [
             styles.editButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor },
+            {
+              backgroundColor: pressed
+                ? buttonPressedColor
+                : buttonColor,
+            },
           ]}
           onPress={() =>
             navigation.navigate("EditPlaylist", { playlistId, isEditable })
