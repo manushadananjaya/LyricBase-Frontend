@@ -77,7 +77,7 @@ export default function Chords() {
         {item.title}
       </Text>
       <Text
-        style={[styles.artist, { fontSize: responsiveFontSize * 0.8 }]}
+        style={[styles.artist, { fontSize: responsiveFontSize * 0.75 }]}
         numberOfLines={1}
         ellipsizeMode="tail"
       >
