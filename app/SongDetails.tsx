@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   ActivityIndicator,
-  Image,
-  ScrollView,
   Dimensions,
   Pressable,
 } from "react-native";
@@ -14,6 +12,7 @@ import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import ImageViewer from "react-native-image-zoom-viewer";
 
 type SongDetailsRouteProp = RouteProp<RootStackParamList, "SongDetails">;
 
@@ -30,6 +29,10 @@ export default function SongDetails() {
   const [loading, setLoading] = useState<boolean>(true);
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
+
+  const { width, height } = Dimensions.get("window");
+  const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
+  const responsiveButtonPadding = width / 40; // Adjust the divisor to get the desired padding
 
   useEffect(() => {
     const fetchImageUrl = async () => {
@@ -54,36 +57,45 @@ export default function SongDetails() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{song.title}</Text>
+        <Text style={[styles.title, { fontSize: responsiveFontSize }]}>
+          {song.title}
+        </Text>
         <Pressable
           style={({ pressed }) => [
             styles.getChordsButton,
-            { backgroundColor: pressed ? buttonPressedColor : buttonColor},
+            {
+              backgroundColor: pressed ? buttonPressedColor : buttonColor,
+              padding: responsiveButtonPadding,
+            },
           ]}
           onPress={handleGetChords}
         >
-          <Text style={styles.getChordsButtonText}>Get Chords</Text>
+          <Text
+            style={[
+              styles.getChordsButtonText,
+              { fontSize: responsiveFontSize * 0.75 },
+            ]}
+          >
+            Get Chords
+          </Text>
         </Pressable>
       </View>
-      <Text style={styles.artist}>{song.artist}</Text>
+      <Text style={[styles.artist, { fontSize: responsiveFontSize * 0.8 }]}>
+        {song.artist}
+      </Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : imageUrl ? (
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          maximumZoomScale={3}
-          minimumZoomScale={1}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
-          centerContent={true}
-          style={styles.scrollContainerImage}
-        >
-          <Image
-            source={{ uri: imageUrl }}
-            style={styles.image}
-            resizeMode="contain"
+        <View style={styles.imageViewerContainer}>
+          <ImageViewer
+            imageUrls={[{ url: imageUrl }]}
+            backgroundColor="white"
+            enableSwipeDown={true}
+            onSwipeDown={() => console.log("swiped down")}
+            renderIndicator={() => null}
+            style={styles.imageViewer}
           />
-        </ScrollView>
+        </View>
       ) : (
         <Text>No Image available</Text>
       )}
@@ -94,49 +106,33 @@ export default function SongDetails() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     padding: 10,
   },
   header: {
-    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+    width: "100%",
   },
   title: {
-    fontSize: 24,
     fontWeight: "bold",
-    marginLeft: "5%",
   },
   getChordsButton: {
-    padding: 10,
     borderRadius: 5,
-    backgroundColor: "#0000ff",
   },
   getChordsButtonText: {
-    fontSize: 16,
     color: "#fff",
   },
   artist: {
-    fontSize: 18,
-    marginTop: 5,
-    marginBottom: 20,
+    marginVertical: 10,
   },
-  scrollContainer: {
+  imageViewerContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  image: {
     width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height * 0.6,
-    aspectRatio: 1,
   },
-  scrollContainerImage: {
-    width: "100%",
-    height: "100%",
-    alignContent: "center",
+  imageViewer: {
+    flex: 1,
+    width: Dimensions.get("window").width,
   },
 });

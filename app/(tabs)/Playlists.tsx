@@ -302,7 +302,9 @@ const PlaylistItem = ({ item, onDelete, onPress }) => {
       ]}
       onPress={onPress}
     >
-      <Text style={styles.playlistTitle}>{item.title}</Text>
+      <Text style={styles.playlistTitle} numberOfLines={1} ellipsizeMode="tail">
+        {item.title}
+      </Text>
       <Pressable
         style={({ pressed }) => [
           styles.deleteButton,
@@ -376,12 +378,15 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   playlistTitle: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: "bold",
+    flexShrink: 1, // Allow the text to shrink
+    marginRight: 10, // Add some margin to the right to separate it from the delete button
   },
   deleteButton: {
     borderRadius: 10,
     padding: 5,
+  
   },
   savedPlaylistsContainer: {
     flexGrow: 1,
@@ -421,16 +426,17 @@ const styles = StyleSheet.create({
   },
   savedPlaylistsContent: {
     flex: 1,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingHorizontal: 20,
+    paddingTop: 10,
   },
   listContentSongs: {
-    paddingBottom: 20,
+    paddingBottom: 150,
   },
   noSavedPlaylists: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    justifyContent: "center",
   },
 });
-
-export { Playlists };

@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { Stack, useRouter } from "expo-router";
 import FeatureCard from "@/components/homeScreen/FeatureCard";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -12,6 +18,11 @@ export default function Home() {
   const profileButtonColor = useThemeColor({}, "profileButton");
   const profileIconColor = useThemeColor({}, "profileIcon");
 
+  const { width, height } = Dimensions.get("window");
+  const responsiveFontSize = width / 10; // Adjust the divisor to get the desired size
+  const responsivePadding = width / 40; // Adjust the divisor to get the desired padding
+  const responsiveProfileButtonSize = width / 8;
+
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -21,15 +32,33 @@ export default function Home() {
           style={styles.backgroundImage}
         />
         <View style={styles.headerContainer}>
-          <Text style={[styles.title, { color: textMain }]}>LyriCBase</Text>
-            <TouchableOpacity
-              onPress={() => router.push("/Profile")}
-              style={[styles.profileButton, { backgroundColor: profileButtonColor }]}
-            >
-              <FontAwesome name="user" size={30} color={profileIconColor}/>
-            </TouchableOpacity>
-          </View>
-        <View style={styles.contentContainer}>
+          <Text
+            style={[
+              styles.title,
+              { fontSize: responsiveFontSize, color: textMain },
+            ]}
+          >
+            LyriCBase
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.push("/Profile")}
+            style={[
+              styles.profileButton,
+              {
+                backgroundColor: profileButtonColor,
+                width: responsiveProfileButtonSize,
+                height: responsiveProfileButtonSize,
+              },
+            ]}
+          >
+            <FontAwesome
+              name="user"
+              size={responsiveProfileButtonSize / 2}
+              color={profileIconColor}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={[styles.contentContainer, { padding: responsivePadding }]}>
           <FeatureCard
             title="Guitar Tuner"
             content="Tune your Guitar from your phone microphone Certified by Kreez Studios "
@@ -75,25 +104,16 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   profileButton: {
-    padding: 10,
-    backgroundColor: "white",
     borderRadius: 25,
-    width: 50,
-    height: 50,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
-    
   },
   contentContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
   },
   title: {
-    fontSize: 42,
     fontWeight: "bold",
-    marginTop: 40,
   },
 });

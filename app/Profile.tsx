@@ -6,17 +6,16 @@ import {
   Pressable,
   ScrollView,
   Dimensions,
-  
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { Text, View ,TextInput} from "@/components/Themed";
+import { Text, View, TextInput } from "@/components/Themed";
 import { useTheme } from "@/context/themeContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useLogout } from "@/hooks/useLogout";
 import { useAuthContext } from "@/hooks/useAuthContext";
 import apiClient from "@/services/authService";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 function ProfileScreen() {
   const { handleLogout } = useLogout();
@@ -36,20 +35,17 @@ function ProfileScreen() {
       return;
     }
 
-    //check if the password is empty if empty send an error
     if (newPassword === "") {
       setError("Password cannot be empty");
       return;
     }
 
-    //set password length to be greater than 8
     if (newPassword.length < 8) {
       setError("Password must be at least 8 characters long");
       setNewPassword("");
       setConfirmNewPassword("");
       return;
     }
-
 
     apiClient
       .put("/auth/changePassword", {
@@ -64,7 +60,6 @@ function ProfileScreen() {
       .catch((error) => {
         setError(error.response.data.message);
       });
- 
   };
 
   if (loading) {
@@ -84,13 +79,23 @@ function ProfileScreen() {
     );
   }
 
+  const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.profileContainer}>
-          <Text style={styles.title}>Profile</Text>
-          <Text style={styles.greeting}>Hello, {user.user.name}!</Text>
-          <Text style={styles.mail}>{user.user.email}</Text>
+          <Text style={[styles.title, { fontSize: responsiveFontSize * 1.5 }]}>
+            Profile
+          </Text>
+          <Text
+            style={[styles.greeting, { fontSize: responsiveFontSize * 1.2 }]}
+          >
+            Hello, {user.user.name}!
+          </Text>
+          <Text style={[styles.mail, { fontSize: responsiveFontSize * 0.9 }]}>
+            {user.user.email}
+          </Text>
           <View
             style={styles.separator}
             lightColor="#eee"
@@ -98,9 +103,23 @@ function ProfileScreen() {
           />
 
           <View style={styles.settingsSection}>
-            <Text style={styles.settingsTitle}>Settings</Text>
+            <Text
+              style={[
+                styles.settingsTitle,
+                { fontSize: responsiveFontSize * 1.1 },
+              ]}
+            >
+              Settings
+            </Text>
             <View style={styles.pickerRow}>
-              <Text style={styles.settingsLabel}>Select Color Theme</Text>
+              <Text
+                style={[
+                  styles.settingsLabel,
+                  { fontSize: responsiveFontSize * 0.9 },
+                ]}
+              >
+                Select Color Theme
+              </Text>
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={theme}
@@ -115,22 +134,38 @@ function ProfileScreen() {
           </View>
 
           <View style={styles.settingsSection}>
-            <Text style={styles.settingsTitle}>Change Password</Text>
+            <Text
+              style={[
+                styles.settingsTitle,
+                { fontSize: responsiveFontSize * 1.1 },
+              ]}
+            >
+              Change Password
+            </Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { fontSize: responsiveFontSize * 0.9 }]}
               placeholder="New Password"
               secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { fontSize: responsiveFontSize * 0.9 }]}
               placeholder="Confirm New Password"
               secureTextEntry
               value={confirmNewPassword}
               onChangeText={setConfirmNewPassword}
             />
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            {error ? (
+              <Text
+                style={[
+                  styles.errorText,
+                  { fontSize: responsiveFontSize * 0.8 },
+                ]}
+              >
+                {error}
+              </Text>
+            ) : null}
             <Pressable
               style={({ pressed }) => [
                 {
@@ -140,7 +175,11 @@ function ProfileScreen() {
               ]}
               onPress={handleChangePassword}
             >
-              <Text style={styles.buttonText}>Change Password</Text>
+              <Text
+                style={[styles.buttonText, { fontSize: responsiveFontSize }]}
+              >
+                Change Password
+              </Text>
             </Pressable>
           </View>
 
@@ -153,7 +192,9 @@ function ProfileScreen() {
             ]}
             onPress={handleLogout}
           >
-            <Text style={styles.buttonText}>Logout</Text>
+            <Text style={[styles.buttonText, { fontSize: responsiveFontSize }]}>
+              Logout
+            </Text>
           </Pressable>
         </View>
       </ScrollView>

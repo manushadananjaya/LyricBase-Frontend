@@ -1,19 +1,20 @@
 import React from "react";
+import { Dimensions, Pressable, StyleSheet } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
-
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 
+const { width, height } = Dimensions.get("window");
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return (
+    <FontAwesome size={width * 0.07} style={{ marginBottom: -3 }} {...props} />
+  );
 }
 
 export default function TabLayout() {
@@ -24,22 +25,14 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         tabBarInactiveTintColor: Colors[colorScheme ?? "light"].tabIconDefault,
-        tabBarStyle: {
-          height: 90,
-          borderTopWidth: 0,
-          paddingVertical: 5,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
-          marginBottom: 4,
-        },
-        tabBarIconStyle: {
-          marginTop: 5,
-          
-        },
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            backgroundColor: Colors[colorScheme ?? "light"].background,
+          },
+        ],
+        tabBarLabelStyle: styles.tabBarLabel,
+        tabBarIconStyle: styles.tabBarIcon,
         headerShown: useClientOnlyValue(false, true),
       }}
     >
@@ -54,9 +47,12 @@ export default function TabLayout() {
                 {({ pressed }) => (
                   <FontAwesome
                     name="info-circle"
-                    size={25}
+                    size={width * 0.06}
                     color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    style={{
+                      marginRight: width * 0.04,
+                      opacity: pressed ? 0.5 : 1,
+                    }}
                   />
                 )}
               </Pressable>
@@ -95,3 +91,22 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  tabBar: {
+    height: height * 0.098,
+    borderTopWidth: 0,
+    paddingVertical: 0,
+    
+  },
+  tabBarLabel: {
+    fontSize: width * 0.03,
+    fontWeight: "600",
+    marginBottom: height * 0.001,
+    
+  },
+  tabBarIcon: {
+    marginTop: height * 0.01,
+    
+  },
+});
