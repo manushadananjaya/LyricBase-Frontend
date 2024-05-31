@@ -13,11 +13,12 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.manusha01.LyriCBase"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -46,7 +47,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "5367deb7-2a1b-4b86-b279-e868db6c5427"
+        "projectId": "34461139-6eb8-447e-926f-af3d8d4af783"
       }
     }
   }

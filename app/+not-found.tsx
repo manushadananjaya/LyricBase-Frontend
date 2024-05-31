@@ -1,8 +1,8 @@
 // screens/AuthLoadingScreen.js
 import React, { useEffect } from "react";
 import { ActivityIndicator, View, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import { useAuthContext } from "@/hooks/useAuthContext"; // Adjust the path as necessary
+import { useRouter ,Stack} from "expo-router";
+import { useAuthContext } from "@/hooks/useAuthContext";
 
 const AuthLoadingScreen = () => {
   const { user, loading } = useAuthContext();
@@ -23,9 +23,12 @@ const AuthLoadingScreen = () => {
   // Show a loading indicator while checking auth status
   if (loading) {
     return (
+      <>
+      <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
+      </>
     );
   }
 
