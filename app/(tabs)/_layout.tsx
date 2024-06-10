@@ -1,5 +1,11 @@
 import React from "react";
-import { Dimensions, Pressable, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  View,
+  Platform,
+} from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
 import Colors from "@/constants/Colors";
@@ -23,6 +29,7 @@ export default function TabLayout() {
   const tabBarActiveTintColor = useThemeColor({}, "tint");
   const tabBarInactiveTintColor = useThemeColor({}, "tabIconDefault");
   const textColor = useThemeColor({}, "text");
+  const tabBarBackground = useThemeColor({}, "tabBarBackground");
 
   return (
     <Tabs
@@ -30,9 +37,14 @@ export default function TabLayout() {
         tabBarActiveTintColor: tabBarActiveTintColor,
         tabBarInactiveTintColor: tabBarInactiveTintColor,
         tabBarStyle: styles.tabBar,
-        tabBarBackground: () => (
-          <BlurView intensity={50} style={StyleSheet.absoluteFill} />
-        ),
+        tabBarBackground: () =>
+          Platform.OS === "ios" ? (
+            <BlurView intensity={50} style={StyleSheet.absoluteFill} />
+          ) : (
+            <View
+              style={[StyleSheet.absoluteFill, { backgroundColor: tabBarBackground }]}
+            />
+          ),
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIconStyle: styles.tabBarIcon,
         headerShown: useClientOnlyValue(false, true),
@@ -100,8 +112,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     paddingVertical: 0,
     position: "absolute",
-    backgroundColor: "transparent",
+    
   },
+  
   tabBarLabel: {
     fontSize: width * 0.03,
     fontWeight: "600",
