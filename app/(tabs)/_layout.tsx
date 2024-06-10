@@ -1,11 +1,12 @@
 import React from "react";
-import { Dimensions, Pressable, StyleSheet } from "react-native";
+import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link, Tabs } from "expo-router";
 import Colors from "@/constants/Colors";
 // import { useColorScheme } from "@/components/useColorScheme";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
+import { BlurView } from "expo-blur";
 
 const { width, height } = Dimensions.get("window");
 
@@ -21,7 +22,6 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const tabBarActiveTintColor = useThemeColor({}, "tint");
   const tabBarInactiveTintColor = useThemeColor({}, "tabIconDefault");
-  const tabBarBackgroundColor = useThemeColor({}, "tabBarBackground");
   const textColor = useThemeColor({}, "text");
 
   return (
@@ -29,12 +29,10 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: tabBarActiveTintColor,
         tabBarInactiveTintColor: tabBarInactiveTintColor,
-        tabBarStyle: [
-          styles.tabBar,
-          {
-            backgroundColor: tabBarBackgroundColor,
-          },
-        ],
+        tabBarStyle: styles.tabBar,
+        tabBarBackground: () => (
+          <BlurView intensity={50} style={StyleSheet.absoluteFill} />
+        ),
         tabBarLabelStyle: styles.tabBarLabel,
         tabBarIconStyle: styles.tabBarIcon,
         headerShown: useClientOnlyValue(false, true),
@@ -102,17 +100,14 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     paddingVertical: 0,
     position: "absolute",
-    
-    
+    backgroundColor: "transparent",
   },
   tabBarLabel: {
     fontSize: width * 0.03,
     fontWeight: "600",
     marginBottom: height * 0.001,
-    
   },
   tabBarIcon: {
     marginTop: height * 0.01,
-    
   },
 });
