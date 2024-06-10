@@ -29,7 +29,7 @@ export default function Home() {
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.container}>
         <Image
-          source={require("../../assets/images/peakpx.jpg")}
+          source={require("../../assets/images/peakpx4.jpg")}
           style={styles.backgroundImage}
         />
         <View style={styles.headerContainer}>
@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     position: "absolute",
-    width: "200%",
-    height: "120%",
+    width: "100%",
+    height: "110%",
     bottom: 0,
     left: 0,
     zIndex: -1,

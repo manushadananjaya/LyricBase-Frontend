@@ -42,7 +42,8 @@ export default {
     profileIcon: "#344054",
 
     featureCardBackground: "rgba(255, 255, 255, 0.5)",
-    featureCardContent: "#373A40",
+    featureCardContent: "#FCFCFD",
+    featureCardTitle: "#FCFCFD",
 
     TextInputColor: "#000000",
 
@@ -83,6 +84,7 @@ export default {
 
     featureCardBackground: "rgba(0, 0, 0, 0.5)",
     featureCardContent: "#888",
+    featureCardTitle: "#FFF",
 
     TextInputColor: "white",
 

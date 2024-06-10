@@ -19,11 +19,16 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
   const FeatureCardBackground = useThemeColor({}, "featureCardBackground");
   const FeatureCardContent = useThemeColor({}, "featureCardContent");
+  const FeatureCardTitle = useThemeColor({}, "featureCardTitle");
 
   return (
     <View style={[styles.card, { backgroundColor: FeatureCardBackground }]}>
-      <Text style={styles.cardTitle}>{title}</Text>
-      <Text style={[styles.cardContent,{color : FeatureCardContent}]}>{content}</Text>
+      <Text style={[styles.cardTitle, { color: FeatureCardTitle }]}>
+        {title}
+      </Text>
+      <Text style={[styles.cardContent, { color: FeatureCardContent }]}>
+        {content}
+      </Text>
       <Pressable
         style={({ pressed }) => [
           styles.button,
