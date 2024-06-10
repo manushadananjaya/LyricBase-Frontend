@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { TextInput, Button, StyleSheet, Pressable } from "react-native";
+import { TextInput, Button, StyleSheet, Pressable,Image } from "react-native";
 import { View, Text } from "@/components/Themed";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -41,6 +41,10 @@ export default function RequestLyricsChords() {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../assets/images/icon.png")}
+        style={styles.mainImage}
+      />
       <Text style={styles.title}>
         Didn't find the song you were looking for? Request it here!
       </Text>
@@ -88,7 +92,11 @@ export default function RequestLyricsChords() {
           },
         ]}
         onPress={handleRequestSubmit}
-        disabled={songName.trim() === "" || description.trim() === "" || email.trim() === ""}
+        disabled={
+          songName.trim() === "" ||
+          description.trim() === "" ||
+          email.trim() === ""
+        }
       >
         <Text style={styles.submitButtonText}>Submit Request</Text>
       </Pressable>
@@ -141,6 +149,12 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontSize: 16,
         fontWeight: "bold",
+    },
+    mainImage: {
+        height: 200,
+        width: 200,
+        borderRadius: 100,
+        marginBottom: 20,
     },
     
 });
