@@ -24,7 +24,6 @@ type ChordsDetailsNavigationProp = StackNavigationProp<
   RootStackParamList,
   "ChordsDetails"
 >;
-
 export default function ChordsDetails() {
   const route = useRoute<ChordsDetailsRouteProp>();
   const navigation = useNavigation<ChordsDetailsNavigationProp>();
@@ -43,6 +42,19 @@ export default function ChordsDetails() {
 
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
+  const SliderMinimumTrackTintColor = useThemeColor(
+    {},
+    "SliderMinimumTrackTintColor"
+  );
+  const SliderMaximumTrackTintColor = useThemeColor(
+    {},
+    "SliderMaximumTrackTintColor"
+  );
+
+  const swipeDownPanelBackground = useThemeColor(
+    {},
+    "swipeDownPanelBackground"
+  );
 
   const { width } = Dimensions.get("window");
   const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
@@ -109,7 +121,7 @@ export default function ChordsDetails() {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={togglePanel} style={styles.controlText}>
-        <Text style={{ color: buttonColor }}>
+        <Text style={{ color: buttonPressedColor }}>
           {panelVisible ? "Hide" : "Show"} Controls
         </Text>
       </TouchableOpacity>
@@ -119,6 +131,7 @@ export default function ChordsDetails() {
           styles.panel,
           {
             transform: [{ translateY: slideAnim }],
+            backgroundColor: swipeDownPanelBackground,
           },
         ]}
       >
@@ -131,8 +144,8 @@ export default function ChordsDetails() {
             value={fontSize}
             onValueChange={(value) => setFontSize(value)}
             step={1}
-            minimumTrackTintColor={buttonColor}
-            maximumTrackTintColor="#000000"
+            minimumTrackTintColor={SliderMinimumTrackTintColor}
+            maximumTrackTintColor={SliderMaximumTrackTintColor}
           />
         </View>
         <View style={styles.switchContainer}>
@@ -154,8 +167,8 @@ export default function ChordsDetails() {
               value={scrollSpeed}
               onValueChange={(value) => setScrollSpeed(value)}
               step={0.01}
-              minimumTrackTintColor={buttonColor}
-              maximumTrackTintColor="#000000"
+              minimumTrackTintColor={SliderMinimumTrackTintColor}
+              maximumTrackTintColor={SliderMaximumTrackTintColor}
             />
           </View>
         )}
@@ -205,11 +218,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     width: "100%",
-    backgroundColor: "#fff",
+
     paddingTop: 20,
     zIndex: 1,
-     alignSelf: "center",
+    alignSelf: "center",
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
     
+
   },
   sliderContainer: {
     marginVertical: 10,

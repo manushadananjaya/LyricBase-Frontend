@@ -33,6 +33,9 @@ export default function SongDetails() {
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
+  const SliderMinimumTrackTintColor = useThemeColor({}, "SliderMinimumTrackTintColor");
+  const SliderMaximumTrackTintColor = useThemeColor({}, "SliderMaximumTrackTintColor");
+
   const { width } = Dimensions.get("window");
   const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
   const responsiveButtonPadding = width / 40; // Adjust the divisor to get the desired padding
@@ -100,8 +103,8 @@ export default function SongDetails() {
           value={fontSize}
           onValueChange={(value) => setFontSize(value)}
           step={1}
-          minimumTrackTintColor={buttonColor}
-          maximumTrackTintColor="#000000"
+          minimumTrackTintColor={SliderMinimumTrackTintColor}
+          maximumTrackTintColor={SliderMaximumTrackTintColor}
         />
       </View>
       {loading ? (
