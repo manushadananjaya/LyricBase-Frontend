@@ -19,13 +19,13 @@ export default {
     tint: tintColorLight, // Accent color
     tabIconDefault: "#D0D5DD", // Default icon color
 
-    buttonColorItems: "#E4E7EC", // Button color
+    buttonColorItems: "rgba(255, 255, 255, 0.8)", // Button color
     buttonColorItemsPressed: "#C8CCE5", // Button pressed color
 
     button: "#475467", // Button color
     buttonPressed: "#3E4784", // Button pressed color
 
-    playlistCardBackground: "#E4E7EC", // Playlist card background
+    playlistCardBackground: "rgba(228, 231, 236, 0.5)", // Playlist card background
     playlistCardBackgroundPressed: "#9EA5D1", // Playlist card background pressed
 
     deleteButton: "#686D76", // Delete button color
@@ -38,7 +38,7 @@ export default {
     editPlaylistSelectedSongCard: "#EAECF5", // Edit playlist selected song card
     placeholder: "#888888", // Placeholder color
 
-    profileButton: "#F8F9FC", // Profile button color
+    profileButton: "rgba(248, 249, 252, 0.5)", // Profile button color
     profileIcon: "#344054",
 
     featureCardBackground: "rgba(255, 255, 255, 0.5)",
@@ -61,12 +61,12 @@ export default {
     //transparent tab bar background
     tabBarBackground: "rgba(0, 0, 0, 0.5)",
 
-    buttonColorItems: "#2E3944", // Button color
+    buttonColorItems: "rgba(46, 57, 68, 0.5)", // Button color
     buttonColorItemsPressed: "#124E66", // Button pressed color
 
     button: "#212A31", // Button color (lighter shade of dark purple)
     buttonPressed: "#748D92", // Button pressed color
-    playlistCardBackground: "#2E3944", // Dark background for playlist card
+    playlistCardBackground: "rgba(46, 57, 68, 0.4)", // Dark background for playlist card
     playlistCardBackgroundPressed: "#748D92", // Playlist card background pressed
     deleteButton: "#D3D9D4", // Delete button color
     deleteButtonText: "#212A31", // Delete button text color
@@ -78,7 +78,7 @@ export default {
     editPlaylistSelectedSongCard: "#212A31", // Edit playlist selected song card
     placeholder: "#AAAAAA", // Placeholder color
 
-    profileButton: "#000000", // Profile button color
+    profileButton: "rgba(0, 0, 0, 0.5)", // Profile button color
     profileIcon: "#FFFFFF",
 
     featureCardBackground: "rgba(0, 0, 0, 0.5)",
