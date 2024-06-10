@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontFamily: "Montserrat-Bold",
+    fontFamily: "-Bold",
     fontWeight: "bold",
     marginBottom: 20,
   },
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
     borderRadius: 5,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
     
   },
   button: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   forgotButton: {
     marginTop: 5,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   forgotButtonText: {
     color: "blue",
     fontSize: 14,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   error: {
     color: "red",
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     color: "#6200ee",
     fontSize: 16,
     // marginTop: 10,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   signupLink: {
     marginTop: 15,

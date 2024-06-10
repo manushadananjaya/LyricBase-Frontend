@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   titleMain: {
     fontSize: 30,
-    fontFamily: "Montserrat-Bold",
+    fontFamily: "-Bold",
     fontWeight: "bold",
     marginBottom: 20,
     marginTop: "20%",

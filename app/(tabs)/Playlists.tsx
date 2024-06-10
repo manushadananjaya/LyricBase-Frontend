@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 30,
     marginTop: 50,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   createButton: {
     padding: 10,

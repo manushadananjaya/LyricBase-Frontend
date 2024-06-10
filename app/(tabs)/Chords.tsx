@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     
   },
   titleMain: {
-    fontFamily: "Montserrat-Bold",
+    // fontFamily: "-Bold",
     fontWeight: "bold",
     marginBottom: 20,
     marginTop: "20%",

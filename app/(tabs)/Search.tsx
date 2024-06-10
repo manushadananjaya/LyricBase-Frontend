@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   artist: {
     fontSize: 16,

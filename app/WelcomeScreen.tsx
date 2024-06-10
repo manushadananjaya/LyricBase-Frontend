@@ -68,21 +68,21 @@ const styles = StyleSheet.create({
     fontSize: 68,
     fontWeight: "bold",
     color: "#fff",
-    fontFamily: 'Montserrat-Bold',
+    // fontFamily: '-Bold',
     marginBottom: 10,
   },
   title2: {
     fontSize: 68,
     fontWeight: "bold",
     color: "#fff",
-    fontFamily: 'Montserrat-Bold',
+    // fontFamily: '-Bold',
     marginBottom: 10,
   },
   title3: {
     fontSize: 68,
     fontWeight: "bold",
     color: "#fff",
-    fontFamily: 'Montserrat-Bold',
+    // fontFamily: '-Bold',
     marginBottom: 30,
   },
   bottomPanel: {
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#ffffff",
     fontSize: 18,
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: '-Regular',
   },
   loginLink: {
     marginTop: 10,
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#ffffff",
     fontSize: 16,
-    fontFamily: 'Montserrat-Regular',
+    // fontFamily: '-Regular',
   },
 });
 

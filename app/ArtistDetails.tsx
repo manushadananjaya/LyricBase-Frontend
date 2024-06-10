@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   header: {
-    fontFamily: "Montserrat-Bold",
+    // fontFamily: "-Bold",
     fontWeight: "bold",
     marginBottom: 20,
     marginTop: "5%",

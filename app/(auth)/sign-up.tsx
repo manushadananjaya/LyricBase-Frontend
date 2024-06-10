@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     marginTop: 20,
-    fontFamily: "Montserrat-Bold",
+    fontFamily: "-Bold",
     fontWeight: "bold",
     marginBottom: 20,
   },
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   buttonSecondary: {
     paddingVertical: 10,
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   buttonSecondaryText: {
     color: "#6200ee",
     fontSize: 16,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   error: {
     color: "red",
@@ -208,13 +208,13 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
     alignSelf: "flex-start",
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   usernameAvailable: {
     color: "green",
     marginBottom: 10,
     alignSelf: "flex-start",
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
   loginLink: {
     marginTop: 10,
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: "#6200ee",
     fontSize: 16,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: "-Regular",
   },
 });
 
