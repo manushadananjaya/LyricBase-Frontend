@@ -54,13 +54,17 @@ export default function Artists() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.container}>
-        <Image source={require("../../assets/images/artists.jpg")} style={styles.mainImage}/>
+        <Image
+          source={require("../../assets/images/artists.jpg")}
+          style={styles.mainImage}
+        />
         <Text style={styles.titleMain}>Artists</Text>
         <FlatList
           data={artists}
           renderItem={renderItem}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           contentContainerStyle={styles.listContent}
+          style={{ maxHeight: "75%" }}
         />
       </View>
     </>
@@ -113,6 +117,6 @@ const styles = StyleSheet.create({
     height: "100%",
     top: 0,
     
-    opacity: 0.8,
+    // opacity: 0.8,
   },
 });

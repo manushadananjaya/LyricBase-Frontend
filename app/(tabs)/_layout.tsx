@@ -21,7 +21,7 @@ function TabBarIcon(props: {
 export default function TabLayout() {
   const tabBarActiveTintColor = useThemeColor({}, "tint");
   const tabBarInactiveTintColor = useThemeColor({}, "tabIconDefault");
-  const backgroundColor = useThemeColor({}, "background");
+  const tabBarBackgroundColor = useThemeColor({}, "tabBarBackground");
   const textColor = useThemeColor({}, "text");
 
   return (
@@ -32,7 +32,7 @@ export default function TabLayout() {
         tabBarStyle: [
           styles.tabBar,
           {
-            backgroundColor: backgroundColor,
+            backgroundColor: tabBarBackgroundColor,
           },
         ],
         tabBarLabelStyle: styles.tabBarLabel,
@@ -101,6 +101,8 @@ const styles = StyleSheet.create({
     height: height * 0.098,
     borderTopWidth: 0,
     paddingVertical: 0,
+    position: "absolute",
+    
     
   },
   tabBarLabel: {

@@ -89,10 +89,12 @@ const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
     width: "200%",
-    height: "100%",
-    top: 0,
+    height: "150%",
+    bottom: 0,
+    
+    
     left: 0,
-    opacity: 0.8,
+    // opacity: 0.8,
     zIndex: -1,
   },
   headerContainer: {

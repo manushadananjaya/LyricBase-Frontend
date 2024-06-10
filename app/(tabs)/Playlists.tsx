@@ -110,9 +110,9 @@ export default function Playlists() {
     );
   };
 
-  const initialHeight = 80;
+  const initialHeight = 170;
   const expandedHeight = 600;
-  const collapsedHeight = 80;
+  const collapsedHeight = 170;
 
   const height = useRef(new Animated.Value(initialHeight)).current;
 
@@ -271,7 +271,7 @@ export default function Playlists() {
                 )}
                 keyExtractor={(item) => item._id}
                 contentContainerStyle={styles.listContentSongs}
-                style={{ maxHeight: "90%" }}
+                style={{ maxHeight: "80%" }}
               />
             )}
           </View>

@@ -104,6 +104,7 @@ export default function Chords() {
           renderItem={renderItem}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           contentContainerStyle={styles.listContent}
+          style={{ maxHeight: "75%" }}
         />
       </View>
     </>
@@ -116,8 +117,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   listContent: {
+    
     paddingHorizontal: 20,
     paddingBottom: 10,
+    
+    
+    
+    
   },
   titleMain: {
     fontFamily: "Montserrat-Bold",
@@ -154,6 +160,6 @@ const styles = StyleSheet.create({
     height: "180%",
     top: 0,
     left: -30,
-    opacity: 0.7,
+    // opacity: 0.7,
   },
 });

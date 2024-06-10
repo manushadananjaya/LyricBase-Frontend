@@ -12,6 +12,10 @@ export default {
     textMain: "#FCFCFD",
     text: "#344054", // Primary text color
     background: "#FCFCFD", // White background
+
+    //transparent tab bar background
+    tabBarBackground: "rgba(0, 0, 0, 0.6)",
+
     tint: tintColorLight, // Accent color
     tabIconDefault: "#D0D5DD", // Default icon color
 
@@ -53,6 +57,9 @@ export default {
     background: "#000000", // Black background
     tint: tintColorDark, // Accent color
     tabIconDefault: "#667085", // Default icon color
+
+    //transparent tab bar background
+    tabBarBackground: "rgba(0, 0, 0, 0.5)",
 
     buttonColorItems: "#2E3944", // Button color
     buttonColorItemsPressed: "#124E66", // Button pressed color
