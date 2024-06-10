@@ -5,6 +5,9 @@ import {
   Pressable,
   Image,
   Dimensions,
+  Alert,
+  TextInput,
+  View as DefaultView,
 } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -12,7 +15,9 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import { Stack } from "expo-router";
+import * as FileSystem from "expo-file-system";
 import apiClient from "@/services/authService";
+import NetInfo from "@react-native-community/netinfo";
 
 type ChordsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -33,17 +38,66 @@ export default function Chords() {
       pdfKey: string;
     }>
   >([]);
+  const [isOffline, setIsOffline] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredSongs, setFilteredSongs] = useState(songs);
 
   useEffect(() => {
-    apiClient
-      .get("/songs/")
-      .then((response) => {
-        setSongs(response.data);
-      })
-      .catch((error) => console.error(error));
+    const checkConnectivity = async () => {
+      const state = await NetInfo.fetch();
+      if (state.isConnected) {
+        fetchSongs();
+      } else {
+        loadOfflineSongs();
+        setIsOffline(true);
+      }
+    };
+
+    checkConnectivity();
   }, []);
 
-  const { width, height } = Dimensions.get("window");
+  const fetchSongs = async () => {
+    try {
+      const response = await apiClient.get("/songs/");
+      setSongs(response.data);
+      setFilteredSongs(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const loadOfflineSongs = async () => {
+    const dir = `${FileSystem.documentDirectory}songs`;
+    try {
+      const files = await FileSystem.readDirectoryAsync(dir);
+      const songs = [];
+      for (const file of files) {
+        const fileUri = `${dir}/${file}`;
+        const song = await FileSystem.readAsStringAsync(fileUri);
+        songs.push(JSON.parse(song));
+      }
+      setSongs(songs);
+      setFilteredSongs(songs);
+      if (songs.length === 0) {
+        Alert.alert("No downloaded songs available.");
+      }
+    } catch (error) {
+      // console.error("Error reading offline songs", error);
+      Alert.alert("No downloaded songs available.");
+    }
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const filtered = songs.filter(
+      (song) =>
+        song.title.toLowerCase().includes(query.toLowerCase()) ||
+        song.artist.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredSongs(filtered);
+  };
+
+  const { width } = Dimensions.get("window");
   const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
   const responsivePadding = width / 40; // Adjust the divisor to get the desired padding
 
@@ -70,7 +124,7 @@ export default function Chords() {
       onPress={() => navigation.navigate("SongDetails", { song: item })}
     >
       <Text
-        style={[styles.title, { fontSize: responsiveFontSize * 0.9}]}
+        style={[styles.title, { fontSize: responsiveFontSize * 0.9 }]}
         numberOfLines={1}
         ellipsizeMode="tail"
       >
@@ -99,8 +153,20 @@ export default function Chords() {
         >
           Songs
         </Text>
+        {isOffline && <Text style={styles.offlineModeText}>Offline Mode</Text>}
+        {isOffline && (
+          <DefaultView style={styles.searchContainer}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search Songs or Artists"
+              value={searchQuery}
+              onChangeText={handleSearch}
+              placeholderTextColor="#888"
+            />
+          </DefaultView>
+        )}
         <FlatList
-          data={songs}
+          data={filteredSongs}
           renderItem={renderItem}
           keyExtractor={(item, index) => `${item.id}-${index}`}
           contentContainerStyle={styles.listContent}
@@ -117,16 +183,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   listContent: {
-    
     paddingHorizontal: 20,
     paddingBottom: 10,
-    
-    
-    
-    
   },
   titleMain: {
-    // fontFamily: "-Bold",
     fontWeight: "bold",
     marginBottom: 20,
     marginTop: "20%",
@@ -160,6 +220,24 @@ const styles = StyleSheet.create({
     height: "180%",
     top: 0,
     left: -30,
-    // opacity: 0.7,
+  },
+  offlineModeText: {
+    color: "red",
+    textAlign: "center",
+    fontWeight: "bold",
+    marginVertical: 10,
+  },
+  searchContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  searchInput: {
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginBottom: 10,
+    color: "white",
   },
 });

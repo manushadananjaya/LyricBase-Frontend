@@ -8,6 +8,7 @@ import {
   Switch,
   Animated,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Text } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -17,6 +18,9 @@ import apiClient from "@/services/authService";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Slider from "@react-native-community/slider";
+import NetInfo from "@react-native-community/netinfo";
+import * as FileSystem from "expo-file-system";
+
 
 type ChordsDetailsRouteProp = RouteProp<RootStackParamList, "ChordsDetails">;
 
@@ -39,6 +43,7 @@ export default function ChordsDetails() {
   const scrollInterval = useRef<NodeJS.Timeout | null>(null);
   const contentHeight = useRef<number>(0);
   const scrollPosition = useRef<number>(0); // Current scroll position
+  const [isOffline, setIsOffline] = useState<boolean>(false);
 
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
@@ -61,19 +66,48 @@ export default function ChordsDetails() {
   const responsiveButtonPadding = width / 40; // Adjust the divisor to get the desired padding
 
   useEffect(() => {
-    const fetchChords = async () => {
-      try {
-        const response = await apiClient.get(`/songs/song/${songId}/chords`);
-        setChords(response.data);
-      } catch (error) {
-        console.error("Error fetching chords", error);
-      } finally {
-        setLoading(false);
+    const checkConnectivity = async () => {
+      const state = await NetInfo.fetch();
+      if (state.isConnected) {
+        fetchChords();
+      } else {
+        loadOfflineChords();
+        setIsOffline(true);
       }
     };
 
-    fetchChords();
-  }, [songId]);
+    checkConnectivity();
+  }, []);
+
+  const fetchChords = async () => {
+    try {
+      const response = await apiClient.get(`/songs/song/${songId}/chords`);
+      setChords(response.data);
+    } catch (error) {
+      console.error("Error fetching chords", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadOfflineChords = async () => {
+    const dir = `${FileSystem.documentDirectory}songs`;
+    const fileUri = `${dir}/${songId}.json`;
+    try {
+      const fileInfo = await FileSystem.getInfoAsync(fileUri);
+      if (!fileInfo.exists) {
+        throw new Error("File does not exist");
+      }
+      const fileContent = await FileSystem.readAsStringAsync(fileUri);
+      const songData = JSON.parse(fileContent);
+      setChords(songData.chords);
+    } catch (error) {
+      console.error("Error reading offline chords", error);
+      Alert.alert("No downloaded chords available.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (scrollInterval.current) {

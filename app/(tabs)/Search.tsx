@@ -16,6 +16,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import apiClient from "@/services/authService";
 import { Stack } from "expo-router";
+import NetInfo from "@react-native-community/netinfo";
 
 type SearchScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -56,6 +57,7 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const navigation = useNavigation<SearchScreenNavigationProp>();
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     const fetchUserDetails = async (userIds: string[]) => {
@@ -117,7 +119,15 @@ export default function Search() {
       }
     };
 
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsOffline(!state.isConnected);
+    });
+
     fetchData();
+
+    return () => {
+      unsubscribe();
+    };
   }, [searchQuery, filter]);
 
   const renderSongItem = ({ item }: { item: Song }) => (
@@ -164,6 +174,18 @@ export default function Search() {
       </Pressable>
     );
   };
+
+  if (isOffline) {
+    return (
+      <View style={styles.container}>
+        <Image
+          source={require("../../assets/images/search2.jpg")}
+          style={styles.backgroundImage}
+        />
+        <Text style={styles.offlineText}>You are in offline mode</Text>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -318,6 +340,15 @@ const styles = StyleSheet.create({
   noResultsText: {
     fontSize: 18,
     color: "#888",
+  },
+  offlineText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#FF0000",
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
+    marginTop: height * 0.4,
   },
   backgroundImage: {
     position: "absolute",
