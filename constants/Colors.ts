@@ -1,5 +1,6 @@
 
 import { TextInput } from "@/components/Themed";
+import Slider from "@react-native-community/slider";
 import { Button } from "react-native";
 
 // Colors.ts
@@ -40,6 +41,11 @@ export default {
     featureCardContent: "#373A40",
 
     TextInputColor: "#000000",
+
+    SliderMinimumTrackTintColor: "#667085",
+    SliderMaximumTrackTintColor: "#D0D5DD",
+
+    swipeDownPanelBackground: "#F8F9FC",
   },
   dark: {
     textMain: "#FCFCFD",
@@ -72,5 +78,10 @@ export default {
     featureCardContent: "#888",
 
     TextInputColor: "white",
+
+    SliderMaximumTrackTintColor: "#667085",
+    SliderMinimumTrackTintColor: "#D0D5DD",
+
+    swipeDownPanelBackground: "#212A31",
   },
 };

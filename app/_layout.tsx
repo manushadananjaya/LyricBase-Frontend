@@ -14,6 +14,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    CurierNew: require("../assets/fonts/cour.ttf"),
     ...FontAwesome.font,
   });
 
@@ -68,6 +69,10 @@ function RootLayoutNav() {
         options={{ headerBackTitle: "Back" }}
       />
       <Stack.Screen name="WelcomeScreen" options={{ headerShown: false }} />
+      <Stack.Screen 
+        name="ChordsDetails"
+        options={{ headerBackTitle: "Back" }}
+      />
     </Stack>
   );
 }
