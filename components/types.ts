@@ -39,4 +39,5 @@ export type RootStackParamList = {
   };
   Welcome: undefined;
   ChordsDetails: { songId: string };
+  OfflineDownloads: undefined; 
 };

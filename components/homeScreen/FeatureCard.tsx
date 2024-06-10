@@ -31,7 +31,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
         ]}
         onPress={onPress}
       >
-        <Text style={styles.buttonText}>Coming Soon</Text>
+        <Text style={styles.buttonText}>Explore</Text>
       </Pressable>
     </View>
   );

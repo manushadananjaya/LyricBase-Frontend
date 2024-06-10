@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, FlatList, Pressable,Image } from "react-native";
+import { StyleSheet, FlatList, Pressable, Image } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "@/components/types";
 import { Stack } from "expo-router";
+import NetInfo from "@react-native-community/netinfo";
 
 import apiClient from "@/services/authService";
 
@@ -18,25 +18,36 @@ type ArtistsScreenNavigationProp = StackNavigationProp<
 interface Artist {
   id: number;
   name: string;
-
 }
 
 export default function Artists() {
-   const buttonColor = useThemeColor({}, "buttonColorItems");
-   const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
+  const buttonColor = useThemeColor({}, "buttonColorItems");
+  const buttonPressedColor = useThemeColor({}, "buttonColorItemsPressed");
   const navigation = useNavigation<ArtistsScreenNavigationProp>();
   const [artists, setArtists] = useState<Artist[]>([]);
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
-    apiClient
-      .get("/artists/")
-      .then((response) => {
-        setArtists(response.data);
-      })
-      .catch((error) => console.error(error));
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsOffline(!state.isConnected);
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
-  
+  useEffect(() => {
+    if (!isOffline) {
+      apiClient
+        .get("/artists/")
+        .then((response) => {
+          setArtists(response.data);
+        })
+        .catch((error) => console.error(error));
+    }
+  }, [isOffline]);
+
   const renderItem = ({ item }: { item: Artist }) => (
     <Pressable
       key={item.id}
@@ -59,6 +70,10 @@ export default function Artists() {
           style={styles.mainImage}
         />
         <Text style={styles.titleMain}>Artists</Text>
+        {isOffline && (
+          
+          <Text style={styles.offlineMessage}>You are in offline Mode</Text>
+        )}
         <FlatList
           data={artists}
           renderItem={renderItem}
@@ -116,7 +131,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     top: 0,
-    
-    // opacity: 0.8,
+  },
+  offlineMessage: {
+    color: "red",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 10,
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Pressable,
@@ -18,6 +18,7 @@ import apiClient from "@/services/authService";
 import { useAuthContext } from "@/hooks/useAuthContext";
 import { Stack } from "expo-router";
 import Icon from "react-native-vector-icons/Ionicons";
+import NetInfo from "@react-native-community/netinfo";
 
 type PlaylistsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -32,13 +33,24 @@ interface Playlist {
 }
 
 export default function Playlists() {
+  const { user } = useAuthContext();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [savedPlaylists, setSavedPlaylists] = useState<Playlist[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingSaved, setLoadingSaved] = useState(true);
+  const [isOffline, setIsOffline] = useState(false);
   const navigation = useNavigation<PlaylistsScreenNavigationProp>();
-  const { user } = useAuthContext();
   const listRef = useRef<FlatList>(null);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsOffline(!state.isConnected);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
@@ -72,9 +84,11 @@ export default function Playlists() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchPlaylists();
-      fetchSavedPlaylists();
-    }, [fetchPlaylists, fetchSavedPlaylists])
+      if (!isOffline) {
+        fetchPlaylists();
+        fetchSavedPlaylists();
+      }
+    }, [fetchPlaylists, fetchSavedPlaylists, isOffline])
   );
 
   const deletePlaylist = (id: string, isSaved: boolean) => {
@@ -159,6 +173,18 @@ export default function Playlists() {
       },
     })
   ).current;
+
+  if (!user || isOffline) {
+    return (
+      <View style={styles.offlineContainer}>
+        <Image
+          source={require("../../assets/images/playlist2.jpeg")}
+          style={styles.backgroundImage}
+        />
+        <Text style={styles.offlineText}>You are in offline mode</Text>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -386,7 +412,6 @@ const styles = StyleSheet.create({
   deleteButton: {
     borderRadius: 10,
     padding: 5,
-  
   },
   savedPlaylistsContainer: {
     flexGrow: 1,
@@ -438,5 +463,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  offlineContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  offlineText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "red",
   },
 });

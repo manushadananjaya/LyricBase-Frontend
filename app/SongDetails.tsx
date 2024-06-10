@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   View,
+  Alert,
 } from "react-native";
 import { Text } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -15,6 +16,8 @@ import apiClient from "@/services/authService";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Slider from "@react-native-community/slider";
+import * as FileSystem from "expo-file-system";
+import NetInfo from "@react-native-community/netinfo";
 
 type SongDetailsRouteProp = RouteProp<RootStackParamList, "SongDetails">;
 
@@ -30,35 +33,72 @@ export default function SongDetails() {
   const [lyrics, setLyrics] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [fontSize, setFontSize] = useState<number>(16); // default font size
+  const [isOffline, setIsOffline] = useState<boolean>(false);
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
 
-  const SliderMinimumTrackTintColor = useThemeColor({}, "SliderMinimumTrackTintColor");
-  const SliderMaximumTrackTintColor = useThemeColor({}, "SliderMaximumTrackTintColor");
+  const SliderMinimumTrackTintColor = useThemeColor(
+    {},
+    "SliderMinimumTrackTintColor"
+  );
+  const SliderMaximumTrackTintColor = useThemeColor(
+    {},
+    "SliderMaximumTrackTintColor"
+  );
 
   const { width } = Dimensions.get("window");
   const responsiveFontSize = width / 24; // Adjust the divisor to get the desired size
   const responsiveButtonPadding = width / 40; // Adjust the divisor to get the desired padding
 
   useEffect(() => {
-    const fetchLyrics = async () => {
-      try {
-        const response = await apiClient.get(`/songs/song/${song._id}/lyrics`);
-        setLyrics(response.data);
-      } catch (error) {
-        console.error("Error fetching lyrics", error);
-      } finally {
-        setLoading(false);
+    const checkConnectivity = async () => {
+      const state = await NetInfo.fetch();
+      if (state.isConnected) {
+        fetchLyrics();
+      } else {
+        loadOfflineLyrics();
+        setIsOffline(true);
       }
     };
 
-    fetchLyrics();
-  }, [song._id]);
+    checkConnectivity();
+  }, []);
+
+  const fetchLyrics = async () => {
+    try {
+      const response = await apiClient.get(`/songs/song/${song._id}/lyrics`);
+      setLyrics(response.data);
+    } catch (error) {
+      console.error("Error fetching lyrics", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadOfflineLyrics = async () => {
+    const dir = `${FileSystem.documentDirectory}songs`;
+    console.log("dir", dir);
+    const fileUri = `${dir}/${song._id}.json`;
+    try {
+      // Check if the file exists before trying to read it
+      const fileInfo = await FileSystem.getInfoAsync(fileUri);
+      if (!fileInfo.exists) {
+        throw new Error("File does not exist");
+      }
+      const fileContent = await FileSystem.readAsStringAsync(fileUri);
+      const songData = JSON.parse(fileContent); 
+      setLyrics(songData.lyrics);
+    } catch (error) {
+      console.error("Error reading offline lyrics", error);
+      Alert.alert("No downloaded lyrics available.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGetChords = () => {
     // Navigate to the Chords screen or perform another action
     navigation.navigate("ChordsDetails", { songId: song._id });
-
   };
 
   return (
@@ -116,6 +156,7 @@ export default function SongDetails() {
       ) : (
         <Text>No Lyrics available</Text>
       )}
+      {isOffline && <Text style={styles.offlineModeText}>Offline Mode</Text>}
     </View>
   );
 }
@@ -160,7 +201,12 @@ const styles = StyleSheet.create({
   },
   lyrics: {
     lineHeight: 24,
-    fontFamily:"SpaceMono",
-    
+    fontFamily: "SpaceMono",
+  },
+  offlineModeText: {
+    color: "red",
+    textAlign: "center",
+    fontWeight: "bold",
+    marginVertical: 10,
   },
 });

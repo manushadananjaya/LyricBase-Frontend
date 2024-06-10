@@ -18,7 +18,7 @@ export default function Home() {
   const profileButtonColor = useThemeColor({}, "profileButton");
   const profileIconColor = useThemeColor({}, "profileIcon");
 
-  const { width, height } = Dimensions.get("window");
+  const { width } = Dimensions.get("window");
   const responsiveFontSize = width / 10; // Adjust the divisor to get the desired size
   const responsivePadding = width / 40; // Adjust the divisor to get the desired padding
   const responsiveProfileButtonSize = width / 8;
@@ -60,6 +60,11 @@ export default function Home() {
         </View>
         <View style={[styles.contentContainer, { padding: responsivePadding }]}>
           <FeatureCard
+            title="Offline Mode"
+            content="Use the app offline with no internet connection required"
+            onPress={() => router.push("/OfflineDownloads")} // Updated onPress for Offline Mode
+          />
+          <FeatureCard
             title="Guitar Tuner"
             content="Tune your Guitar from your phone microphone Certified by Kreez Studios "
             onPress={() => console.log("Feature 1 Pressed")}
@@ -68,11 +73,6 @@ export default function Home() {
             title="AI Chords"
             content="Get AI generated chords for your favorite songs"
             onPress={() => console.log("Feature 2 Pressed")}
-          />
-          <FeatureCard
-            title="Offline Mode"
-            content="Use the app offline with no internet connection required"
-            onPress={() => console.log("Feature 3 Pressed")}
           />
         </View>
       </View>
@@ -91,10 +91,7 @@ const styles = StyleSheet.create({
     width: "200%",
     height: "150%",
     bottom: 0,
-    
-    
     left: 0,
-    // opacity: 0.8,
     zIndex: -1,
   },
   headerContainer: {
