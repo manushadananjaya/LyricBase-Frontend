@@ -74,6 +74,7 @@ function RootLayoutNav() {
         options={{ headerBackTitle: "Back" }}
       />
       <Stack.Screen name="OfflineDownloads" options={{title:"Offline Mode", headerBackTitle: "Back" }} />
+      <Stack.Screen name="RequestLyricsChords" options={{title:"Request Lyrics & Chords", headerBackTitle: "Back" }} />
     </Stack>
   );
 }

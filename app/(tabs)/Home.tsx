@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import FeatureCard from "@/components/homeScreen/FeatureCard";
@@ -28,7 +29,7 @@ export default function Home() {
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.container}>
         <Image
-          source={require("../../assets/images/guitarhome.jpg")}
+          source={require("../../assets/images/peakpx.jpg")}
           style={styles.backgroundImage}
         />
         <View style={styles.headerContainer}>
@@ -58,23 +59,33 @@ export default function Home() {
             />
           </TouchableOpacity>
         </View>
-        <View style={[styles.contentContainer, { padding: responsivePadding }]}>
-          <FeatureCard
-            title="Offline Mode"
-            content="Use the app offline with no internet connection required"
-            onPress={() => router.push("/OfflineDownloads")} // Updated onPress for Offline Mode
-          />
-          <FeatureCard
-            title="Guitar Tuner"
-            content="Tune your Guitar from your phone microphone Certified by Kreez Studios "
-            onPress={() => console.log("Feature 1 Pressed")}
-          />
-          <FeatureCard
-            title="AI Chords"
-            content="Get AI generated chords for your favorite songs"
-            onPress={() => console.log("Feature 2 Pressed")}
-          />
-        </View>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View
+            style={[styles.contentContainer, { padding: responsivePadding }]}
+          >
+            <FeatureCard
+              title="Offline Mode"
+              content="Use the app offline with no internet connection required"
+              onPress={() => router.push("/OfflineDownloads")} // Updated onPress for Offline Mode
+            />
+            <FeatureCard
+              title="Request Lyrics & Chords"
+              content="Didn't find the song you were looking for? Request it here!"
+              onPress={() => router.push("/RequestLyricsChords")} // Updated onPress for Request Lyrics & Chords
+            />
+            <FeatureCard
+              title="Guitar Tuner"
+              content="Tune your Guitar from your phone microphone Certified by Kreez Studios "
+              onPress={() => console.log("Feature 1 Pressed")}
+            />
+            <FeatureCard
+              title="AI Chords"
+              content="Get AI generated chords for your favorite songs"
+              onPress={() => console.log("Feature 2 Pressed")}
+            />
+            
+          </View>
+        </ScrollView>
       </View>
     </>
   );
@@ -89,7 +100,7 @@ const styles = StyleSheet.create({
   backgroundImage: {
     position: "absolute",
     width: "200%",
-    height: "150%",
+    height: "120%",
     bottom: 0,
     left: 0,
     zIndex: -1,
@@ -107,10 +118,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  scrollContainer: {
+    flexGrow: 1,
+  },
   contentContainer: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    flexGrow: 1,
+    marginBottom: 100,
+    
+    
   },
   title: {
     fontWeight: "bold",

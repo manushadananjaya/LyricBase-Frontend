@@ -45,7 +45,7 @@ export default function Chords() {
   useEffect(() => {
     const checkConnectivity = async () => {
       const state = await NetInfo.fetch();
-      if (!state.isConnected) {
+      if (state.isConnected) {
         fetchSongs();
       } else {
         loadOfflineSongs();
