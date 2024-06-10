@@ -9,8 +9,6 @@ import {
   Animated,
   TouchableOpacity,
   Alert,
-  TextInput,
-  FlatList,
 } from "react-native";
 import { Text } from "@/components/Themed";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -23,13 +21,13 @@ import Slider from "@react-native-community/slider";
 import NetInfo from "@react-native-community/netinfo";
 import * as FileSystem from "expo-file-system";
 
+
 type ChordsDetailsRouteProp = RouteProp<RootStackParamList, "ChordsDetails">;
 
 type ChordsDetailsNavigationProp = StackNavigationProp<
   RootStackParamList,
   "ChordsDetails"
 >;
-
 export default function ChordsDetails() {
   const route = useRoute<ChordsDetailsRouteProp>();
   const navigation = useNavigation<ChordsDetailsNavigationProp>();
@@ -46,8 +44,6 @@ export default function ChordsDetails() {
   const contentHeight = useRef<number>(0);
   const scrollPosition = useRef<number>(0); // Current scroll position
   const [isOffline, setIsOffline] = useState<boolean>(false);
-  const [offlineSongs, setOfflineSongs] = useState<Array<{ id: string; name: string; artist: string }>>([]);
-  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const buttonColor = useThemeColor({}, "button");
   const buttonPressedColor = useThemeColor({}, "buttonPressed");
@@ -77,7 +73,6 @@ export default function ChordsDetails() {
       } else {
         loadOfflineChords();
         setIsOffline(true);
-        loadOfflineSongs();
       }
     };
 
@@ -112,36 +107,6 @@ export default function ChordsDetails() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const loadOfflineSongs = async () => {
-    const dir = `${FileSystem.documentDirectory}songs`;
-    try {
-      const files = await FileSystem.readDirectoryAsync(dir);
-      const songs = await Promise.all(
-        files.map(async (file) => {
-          const fileContent = await FileSystem.readAsStringAsync(`${dir}/${file}`);
-          const songData = JSON.parse(fileContent);
-          return { id: file.replace('.json', ''), name: songData.name, artist: songData.artist };
-        })
-      );
-      setOfflineSongs(songs);
-    } catch (error) {
-      console.error("Error loading offline songs", error);
-    }
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    const filteredSongs = offlineSongs.filter((song) =>
-      song.name.toLowerCase().includes(query.toLowerCase()) ||
-      song.artist.toLowerCase().includes(query.toLowerCase())
-    );
-    setOfflineSongs(filteredSongs);
-  };
-
-  const selectSong = (id: string) => {
-    navigation.navigate("ChordsDetails", { songId: id });
   };
 
   useEffect(() => {
@@ -258,27 +223,6 @@ export default function ChordsDetails() {
       ) : (
         <Text>No Chords available</Text>
       )}
-      {isOffline && (
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search offline songs"
-            value={searchQuery}
-            onChangeText={handleSearch}
-          />
-          <FlatList
-            data={offlineSongs}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity onPress={() => selectSong(item.id)}>
-                <Text style={styles.songItem}>
-                  {item.name} - {item.artist}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      )}
     </View>
   );
 }
@@ -308,6 +252,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     width: "100%",
+
     paddingTop: 20,
     zIndex: 1,
     alignSelf: "center",
@@ -321,6 +266,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    
+
   },
   sliderContainer: {
     marginVertical: 10,
@@ -349,20 +296,5 @@ const styles = StyleSheet.create({
   controlText: {
     alignItems: "center",
     padding: 10,
-  },
-  searchContainer: {
-    padding: 10,
-  },
-  searchInput: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  songItem: {
-    padding: 10,
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
   },
 });
