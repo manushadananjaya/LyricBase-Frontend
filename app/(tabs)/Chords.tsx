@@ -45,7 +45,7 @@ export default function Chords() {
   useEffect(() => {
     const checkConnectivity = async () => {
       const state = await NetInfo.fetch();
-      if (state.isConnected) {
+      if (!state.isConnected) {
         fetchSongs();
       } else {
         loadOfflineSongs();
@@ -82,7 +82,7 @@ export default function Chords() {
         Alert.alert("No downloaded songs available.");
       }
     } catch (error) {
-      console.error("Error reading offline songs", error);
+      // console.error("Error reading offline songs", error);
       Alert.alert("No downloaded songs available.");
     }
   };
