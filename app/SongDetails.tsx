@@ -54,7 +54,8 @@ export default function SongDetails() {
 
   const handleGetChords = () => {
     // Navigate to the Chords screen or perform another action
-    // navigation.navigate("Chords", { songId: song._id });
+    navigation.navigate("ChordsDetails", { songId: song._id });
+
   };
 
   return (
@@ -156,6 +157,7 @@ const styles = StyleSheet.create({
   },
   lyrics: {
     lineHeight: 24,
+    fontFamily:"SpaceMono",
     
   },
 });
