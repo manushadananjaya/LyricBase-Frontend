@@ -59,8 +59,11 @@ export default function Chords() {
   const fetchSongs = async () => {
     try {
       const response = await apiClient.get("/songs/");
-      setSongs(response.data);
-      setFilteredSongs(response.data);
+      const sortedSongs = response.data.sort((a: { title: string; }, b: { title: string; }) =>
+        a.title.localeCompare(b.title)
+      );
+      setSongs(sortedSongs);
+      setFilteredSongs(sortedSongs);
     } catch (error) {
       console.error(error);
     }
@@ -76,13 +79,13 @@ export default function Chords() {
         const song = await FileSystem.readAsStringAsync(fileUri);
         songs.push(JSON.parse(song));
       }
-      setSongs(songs);
-      setFilteredSongs(songs);
-      if (songs.length === 0) {
+      const sortedSongs = songs.sort((a, b) => a.title.localeCompare(b.title));
+      setSongs(sortedSongs);
+      setFilteredSongs(sortedSongs);
+      if (sortedSongs.length === 0) {
         Alert.alert("No downloaded songs available.");
       }
     } catch (error) {
-      // console.error("Error reading offline songs", error);
       Alert.alert("No downloaded songs available.");
     }
   };
