@@ -4,3 +4,40 @@
 
 expo-env.d.ts
 # @end expo-cli
+
+.DS_Store
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Gradle files
+.gradle/
+
+# OS generated files
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Node.js
+node_modules/
+npm-debug.log
+
+
+# Expo
+.expo
+.expo-shared
+node_modules
+.web/
+
+
+
